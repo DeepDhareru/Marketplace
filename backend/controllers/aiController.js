@@ -8,26 +8,36 @@ const generateDescription = async (req, res) => {
     if (!name) return res.status(400).json({ message: 'Product name is required' });
 
     console.log('Generating description for:', name, category);
-    console.log('HF Key exists:', !!process.env.HUGGINGFACE_API_KEY);
 
-    const prompt = `Write a 2-3 sentence product description for: ${name}. Category: ${category}. Price: Rs.${price}. Be persuasive and mention key benefits.`;
+    const result = await hf.chatCompletion({
+      model: 'mistralai/Mistral-7B-Instruct-v0.3',
+      messages: [
+        {
+          role: 'user',
+          content: `Write a 2-3 sentence product description for an e-commerce store.
+Product Name: ${name}
+Category: ${category || 'General'}
+Price: ₹${price || ''}
 
-    const result = await hf.textGeneration({
-      model: 'mistralai/Mistral-7B-Instruct-v0.2',
-      inputs: prompt,
-      parameters: {
-        max_new_tokens: 100,
-        return_full_text: false,
-      },
+Rules:
+- Only 2-3 sentences
+- No bullet points
+- Highlight key benefits
+- Sound persuasive
+- End with value proposition
+- Return only the description, nothing else`,
+        },
+      ],
+      max_tokens: 120,
+      temperature: 0.7,
     });
 
-    console.log('HF Result:', result);
-
-    const description = result.generated_text.trim();
+    const description = result.choices[0].message.content.trim();
+    console.log('Generated:', description);
     res.json({ description });
 
   } catch (error) {
-    console.error('Full HF error:', error);
+    console.error('HF Error:', error.message);
     res.status(500).json({ message: error.message || 'Failed to generate description' });
   }
 };
