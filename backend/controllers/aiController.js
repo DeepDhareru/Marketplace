@@ -13,7 +13,7 @@ const generateDescription = async (req, res) => {
     const prompt = `Write a 2-3 sentence product description for: ${name}. Category: ${category}. Price: Rs.${price}. Be persuasive and mention key benefits.`;
 
     const result = await hf.textGeneration({
-      model: 'facebook/opt-1.3b',
+      model: 'mistralai/Mistral-7B-Instruct-v0.2',
       inputs: prompt,
       parameters: {
         max_new_tokens: 100,
