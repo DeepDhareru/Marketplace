@@ -8,7 +8,7 @@ const getProducts = async (req, res) => {
     const filter = {};
     if (keyword) filter.name = { $regex: keyword, $options: 'i' };
     if (category) filter.category = category;
-    const products = await Product.find(filter).populate('seller', 'name email');
+    const products = await Product.find(filter).populate('seller', 'name email isVerified');
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
