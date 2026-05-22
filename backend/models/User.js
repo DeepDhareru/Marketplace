@@ -10,6 +10,14 @@ const userSchema = new mongoose.Schema(
     address: { type: String, default: '' },
     phone: { type: String, default: '' },
     isActive: { type: Boolean, default: true },
+    isVerified: { type: Boolean, default: false },
+    addresses: [
+      {
+        label: { type: String, default: 'Home' },
+        address: { type: String, required: true },
+        isDefault: { type: Boolean, default: false },
+      }
+    ],
   },
   { timestamps: true }
 );

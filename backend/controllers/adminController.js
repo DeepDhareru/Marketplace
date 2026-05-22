@@ -22,9 +22,22 @@ const toggleUserStatus = async (req, res) => {
   }
 };
 
+const toggleVerification = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (user.role !== 'seller') return res.status(400).json({ message: 'Only sellers can be verified' });
+    user.isVerified = !user.isVerified;
+    await user.save();
+    res.json({ message: `Seller ${user.isVerified ? 'verified' : 'unverified'} successfully` });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate('seller', 'name email');
+    const products = await Product.find().populate('seller', 'name email isVerified');
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -56,6 +69,8 @@ const getStats = async (req, res) => {
     const totalUsers = await User.countDocuments();
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();
+    const totalSellers = await User.countDocuments({ role: 'seller' });
+    const verifiedSellers = await User.countDocuments({ role: 'seller', isVerified: true });
     const revenue = await Order.aggregate([
       { $match: { paymentStatus: 'paid' } },
       { $group: { _id: null, total: { $sum: '$totalAmount' } } },
@@ -65,10 +80,20 @@ const getStats = async (req, res) => {
       totalProducts,
       totalOrders,
       totalRevenue: revenue[0]?.total || 0,
+      totalSellers,
+      verifiedSellers,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = { getAllUsers, toggleUserStatus, getAllProducts, deleteProduct, getAllOrders, getStats };
+module.exports = {
+  getAllUsers,
+  toggleUserStatus,
+  toggleVerification,
+  getAllProducts,
+  deleteProduct,
+  getAllOrders,
+  getStats,
+};

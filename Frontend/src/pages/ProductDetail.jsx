@@ -7,6 +7,8 @@ import StarRating from '../components/StarRating';
 import Loader from '../components/Loader';
 import toast from 'react-hot-toast';
 import ProductRecommendations from '../components/ProductRecommendations';
+import RecentlyViewed from '../components/RecentlyViewed';
+import useRecentlyViewed from '../hooks/useRecentlyViewed';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -66,6 +68,8 @@ const ProductDetail = () => {
       setSubmitting(false);
     }
   };
+
+  useRecentlyViewed(id);
 
   if (loading) return <Loader />;
   if (!product) return (
@@ -328,10 +332,13 @@ const ProductDetail = () => {
         )}
       </div>
       {/* Recommendations */}
-<ProductRecommendations
-  category={product.category}
-  currentProductId={product._id}
-/>
+        <ProductRecommendations
+          category={product.category}
+          currentProductId={product._id}
+        />
+
+        {/* Recently Viewed */}
+        <RecentlyViewed currentProductId={id} />
     </div>
   );
 };
