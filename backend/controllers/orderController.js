@@ -6,6 +6,7 @@ const razorpay = require('../utils/razorpay');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 const { orderConfirmationEmail, newOrderSellerEmail, orderStatusEmail } = require('../utils/emailTemplates');
+const createNotification = require('../utils/createNotification');
 
 const createOrder = async (req, res) => {
   try {
@@ -57,15 +58,42 @@ const verifyPayment = async (req, res) => {
       html: orderConfirmationEmail(order, buyer),
     });
 
+    // Notify buyer in-app
+    await createNotification({
+      userId: req.user._id,
+      title: 'Order Confirmed! 🎉',
+      message: `Your order of ₹${order.totalAmount} has been placed successfully.`,
+      type: 'order',
+      link: '/my-orders',
+    });
+
     // Send notification to sellers
     const productIds = order.items.map(i => i.product);
-    const products = await Product.find({ _id: { $in: productIds } }).populate('seller', 'name email');
-    const sellerEmails = [...new Set(products.map(p => ({ email: p.seller.email, name: p.seller.name })))];
-    for (const seller of sellerEmails) {
+    const products = await Product.find({ _id: { $in: productIds } }).populate('seller', 'name email _id');
+    const uniqueSellers = [];
+    const seenIds = new Set();
+    for (const p of products) {
+      if (p.seller && !seenIds.has(p.seller._id.toString())) {
+        seenIds.add(p.seller._id.toString());
+        uniqueSellers.push(p.seller);
+      }
+    }
+
+    for (const seller of uniqueSellers) {
+      // Email to seller
       await sendEmail({
         to: seller.email,
         subject: 'New Order Received - Marketplace',
         html: newOrderSellerEmail(order, seller.name),
+      });
+
+      // In-app notification to seller
+      await createNotification({
+        userId: seller._id,
+        title: 'New Order Received! 📦',
+        message: `You have a new order worth ₹${order.totalAmount}. Process it now.`,
+        type: 'order',
+        link: '/seller/orders',
       });
     }
 
@@ -77,7 +105,9 @@ const verifyPayment = async (req, res) => {
 
 const getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ buyer: req.user._id }).populate('items.product', 'name images price');
+    const orders = await Order.find({ buyer: req.user._id })
+      .populate('items.product', 'name images price')
+      .sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -88,7 +118,8 @@ const getSellerOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate({ path: 'items.product', match: { seller: req.user._id } })
-      .populate('buyer', 'name email');
+      .populate('buyer', 'name email')
+      .sort({ createdAt: -1 });
     const filtered = orders.filter(o => o.items.some(i => i.product));
     res.json(filtered);
   } catch (error) {
@@ -104,12 +135,23 @@ const updateOrderStatus = async (req, res) => {
       { new: true }
     );
 
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
     // Send status update email to buyer
     const buyer = await User.findById(order.buyer);
     await sendEmail({
       to: buyer.email,
       subject: `Order ${req.body.status} - Marketplace`,
       html: orderStatusEmail(order, buyer, req.body.status),
+    });
+
+    // In-app notification to buyer
+    await createNotification({
+      userId: order.buyer,
+      title: 'Order Status Updated 📬',
+      message: `Your order status has been updated to "${req.body.status}".`,
+      type: 'order',
+      link: '/my-orders',
     });
 
     res.json(order);

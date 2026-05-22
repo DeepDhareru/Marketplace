@@ -2,14 +2,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
-import { useEffect } from 'react';
-import { FiShoppingCart, FiUser, FiLogOut, FiSun, FiMoon } from 'react-icons/fi';
+import { useEffect, useState } from 'react';
+import { FiShoppingCart, FiUser, FiLogOut, FiSun, FiMoon, FiMenu, FiX } from 'react-icons/fi';
+import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const { cartCount, fetchCartCount } = useCart();
   const { darkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     if (user) fetchCartCount();
@@ -18,14 +20,23 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+    setMobileOpen(false);
   };
+
+  const closeMenu = () => setMobileOpen(false);
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50 transition-colors duration-200">
       <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold text-blue-600">🛒 Marketplace</Link>
 
-        <div className="flex items-center gap-4">
+        {/* Logo */}
+        <Link to="/" className="text-2xl font-bold text-blue-600" onClick={closeMenu}>
+          🛒 Marketplace
+        </Link>
+
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-4">
+
           {/* Dark mode toggle */}
           <button
             onClick={toggleTheme}
@@ -40,14 +51,24 @@ const Navbar = () => {
           {!user ? (
             <>
               <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-blue-600">Login</Link>
-              <Link to="/register" className="bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700">Register</Link>
+              <Link to="/register" className="bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700">
+                Register
+              </Link>
             </>
           ) : (
             <>
+              {/* Buyer Links */}
               {user.role === 'buyer' && (
                 <>
-                  <Link to="/my-orders" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">My Orders</Link>
-                  <Link to="/wishlist" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">Wishlist</Link>
+                  <Link to="/my-orders" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    My Orders
+                  </Link>
+                  <Link to="/wishlist" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    Wishlist
+                  </Link>
+                  <Link to="/addresses" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    Addresses
+                  </Link>
                   <Link to="/cart" className="relative">
                     <FiShoppingCart size={22} className="text-gray-700 dark:text-gray-300" />
                     {cartCount > 0 && (
@@ -59,30 +80,148 @@ const Navbar = () => {
                 </>
               )}
 
+              {/* Seller Links */}
               {user.role === 'seller' && (
                 <>
-                  <Link to="/seller/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">Dashboard</Link>
-                  <Link to="/seller/products" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">Products</Link>
-                  <Link to="/seller/orders" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">Orders</Link>
-                  <Link to="/seller/coupons" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">Coupons</Link>
+                  <Link to="/seller/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    Dashboard
+                  </Link>
+                  <Link to="/seller/products" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    Products
+                  </Link>
+                  <Link to="/seller/orders" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    Orders
+                  </Link>
+                  <Link to="/seller/coupons" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    Coupons
+                  </Link>
+                </>
+              )}
+
+              {/* Admin Links */}
+              {user.role === 'admin' && (
+                <>
+                  <Link to="/admin/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    Dashboard
+                  </Link>
+                  <Link to="/admin/users" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    Users
+                  </Link>
+                  <Link to="/admin/products" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    Products
+                  </Link>
+                  <Link to="/admin/orders" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    Orders
+                  </Link>
+                </>
+              )}
+
+              {/* Notification Bell */}
+              <NotificationBell />
+
+              {/* Profile & Logout */}
+              <Link to="/profile">
+                <FiUser size={20} className="text-gray-700 dark:text-gray-300" />
+              </Link>
+              <button onClick={handleLogout}>
+                <FiLogOut size={20} className="text-red-500" />
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Right Side */}
+        <div className="flex md:hidden items-center gap-3">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+          >
+            {darkMode
+              ? <FiSun size={18} className="text-yellow-400" />
+              : <FiMoon size={18} className="text-gray-600" />
+            }
+          </button>
+          {user && <NotificationBell />}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+          >
+            {mobileOpen
+              ? <FiX size={22} className="text-gray-700 dark:text-gray-300" />
+              : <FiMenu size={22} className="text-gray-700 dark:text-gray-300" />
+            }
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <div className="md:hidden bg-white dark:bg-gray-800 border-t dark:border-gray-700 px-4 py-4 space-y-3">
+          {!user ? (
+            <>
+              <Link to="/login" onClick={closeMenu}
+                className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">
+                Login
+              </Link>
+              <Link to="/register" onClick={closeMenu}
+                className="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-center">
+                Register
+              </Link>
+            </>
+          ) : (
+            <>
+              {user.role === 'buyer' && (
+                <>
+                  <Link to="/my-orders" onClick={closeMenu} className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">My Orders</Link>
+                  <Link to="/wishlist" onClick={closeMenu} className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">Wishlist</Link>
+                  <Link to="/addresses" onClick={closeMenu} className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">Addresses</Link>
+                  <Link to="/cart" onClick={closeMenu} className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">
+                    Cart
+                    {cartCount > 0 && (
+                      <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                </>
+              )}
+
+              {user.role === 'seller' && (
+                <>
+                  <Link to="/seller/dashboard" onClick={closeMenu} className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">Dashboard</Link>
+                  <Link to="/seller/products" onClick={closeMenu} className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">Products</Link>
+                  <Link to="/seller/orders" onClick={closeMenu} className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">Orders</Link>
+                  <Link to="/seller/coupons" onClick={closeMenu} className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">Coupons</Link>
                 </>
               )}
 
               {user.role === 'admin' && (
                 <>
-                  <Link to="/admin/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">Dashboard</Link>
-                  <Link to="/admin/users" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">Users</Link>
-                  <Link to="/admin/products" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">Products</Link>
-                  <Link to="/admin/orders" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">Orders</Link>
+                  <Link to="/admin/dashboard" onClick={closeMenu} className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">Dashboard</Link>
+                  <Link to="/admin/users" onClick={closeMenu} className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">Users</Link>
+                  <Link to="/admin/products" onClick={closeMenu} className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">Products</Link>
+                  <Link to="/admin/orders" onClick={closeMenu} className="block text-gray-600 dark:text-gray-300 hover:text-blue-600 py-2">Orders</Link>
                 </>
               )}
 
-              <Link to="/profile"><FiUser size={20} className="text-gray-700 dark:text-gray-300" /></Link>
-              <button onClick={handleLogout}><FiLogOut size={20} className="text-red-500" /></button>
+              <div className="border-t dark:border-gray-700 pt-3 flex items-center justify-between">
+                <Link to="/profile" onClick={closeMenu}
+                  className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600">
+                  <FiUser size={18} />
+                  <span className="text-sm">Profile</span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 text-red-500 hover:text-red-700"
+                >
+                  <FiLogOut size={18} />
+                  <span className="text-sm">Logout</span>
+                </button>
+              </div>
             </>
           )}
         </div>
-      </div>
+      )}
     </nav>
   );
 };
