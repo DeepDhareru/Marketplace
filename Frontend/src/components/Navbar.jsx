@@ -77,6 +77,12 @@ const Navbar = () => {
                       </span>
                     )}
                   </Link>
+                  <Link to="/flash-sales" className="text-gray-600 dark:text-gray-300 hover:text-red-600 text-sm font-medium">
+                    ⚡ Deals
+                  </Link>
+                  <Link to="/compare" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    ⚖️ Compare
+                  </Link>
                 </>
               )}
 
@@ -94,6 +100,9 @@ const Navbar = () => {
                   </Link>
                   <Link to="/seller/coupons" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
                     Coupons
+                  </Link>
+                  <Link to="/seller/flash-sales" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    Flash Sales
                   </Link>
                 </>
               )}

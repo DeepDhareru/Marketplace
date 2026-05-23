@@ -29,6 +29,11 @@ import AdminOrders from './pages/admin/AdminOrders';
 import Wishlist from './pages/buyer/Wishlist';
 import MyCoupons from './pages/seller/MyCoupons';
 
+import FlashSales from './pages/FlashSales';
+import ManageFlashSales from './pages/seller/ManageFlashSales';
+
+import ComparePage from './pages/ComparePage';
+
 function App() {
   return (
     <BrowserRouter>
@@ -66,6 +71,13 @@ function App() {
 
           {/* Coupons */}
           <Route path="/seller/coupons" element={<ProtectedRoute role="seller"><MyCoupons /></ProtectedRoute>} />
+
+          {/* Flash Sales */}
+          <Route path="/flash-sales" element={<FlashSales />} />
+          <Route path="/seller/flash-sales" element={<ProtectedRoute role="seller"><ManageFlashSales /></ProtectedRoute>} />
+
+          {/* Compare */}
+          <Route path="/compare" element={<ComparePage />} />
 
           
           <Route path="*" element={<NotFound />} />

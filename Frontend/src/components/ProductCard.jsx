@@ -7,12 +7,14 @@ import { useState } from 'react';
 import API from '../api/axios';
 import toast from 'react-hot-toast';
 import { FiHeart } from 'react-icons/fi';
+import { useCompare } from '../context/CompareContext';
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { user } = useAuth();
   const [wishlisted, setWishlisted] = useState(false);
+  const { addToCompare } = useCompare();
 
   const toggleWishlist = async (e) => {
     e.stopPropagation();
@@ -107,6 +109,13 @@ const ProductCard = ({ product }) => {
             }`}
           >
             {product.stock === 0 ? 'Sold Out' : 'Add to Cart'}
+          </button>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); addToCompare(product); }}
+            className="w-full mt-2 text-xs border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 py-1.5 rounded-lg hover:border-blue-400 hover:text-blue-600 transition"
+          >
+            ⚖️ Compare
           </button>
         </div>
 

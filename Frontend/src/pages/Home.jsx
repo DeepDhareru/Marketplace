@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import API from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import Loader from '../components/Loader';
+import FlashSaleTimer from '../components/FlashSaleTimer';
 
 const CATEGORIES = ['All', 'Electronics', 'Clothing', 'Books', 'Home', 'Sports', 'Other'];
 const SORT_OPTIONS = [
@@ -21,6 +22,7 @@ const Home = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [inStock, setInStock] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [flashSales, setFlashSales] = useState([]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -79,8 +81,32 @@ const Home = () => {
     sort !== 'newest',
   ].filter(Boolean).length;
 
+  useEffect(() => {
+    API.get('/flash-sales/active')
+      .then(({ data }) => setFlashSales(data))
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+
+      {flashSales.length > 0 && (
+  <div
+    onClick={() => navigate('/flash-sales')}
+    className="bg-gradient-to-r from-red-600 to-orange-500 rounded-2xl p-4 mb-6 cursor-pointer hover:opacity-95 transition flex justify-between items-center flex-wrap gap-3"
+  >
+    <div>
+      <div className="flex items-center gap-2 mb-1">
+        <span className="text-white font-bold text-lg">⚡ Flash Sale</span>
+        <span className="bg-white text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">
+          {flashSales.length} deals
+        </span>
+      </div>
+      <p className="text-red-100 text-sm">Limited time offers — up to {Math.max(...flashSales.map(s => s.discountPercent))}% off!</p>
+    </div>
+    <FlashSaleTimer endTime={flashSales[0]?.endTime} size="md" />
+  </div>
+)}
 
       {/* Search Bar */}
       <form onSubmit={handleSearch} className="flex gap-2 mb-4">

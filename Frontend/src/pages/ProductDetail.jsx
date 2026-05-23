@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import ProductRecommendations from '../components/ProductRecommendations';
 import RecentlyViewed from '../components/RecentlyViewed';
 import useRecentlyViewed from '../hooks/useRecentlyViewed';
+import ProductQnA from '../components/ProductQnA';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -228,6 +229,11 @@ const ProductDetail = () => {
             </div>
           )}
         </div>
+        
+        <ProductQnA
+          productId={id}
+          sellerId={product.seller?._id}
+        />
 
         {/* Reviews List */}
         {reviews.length === 0 ? (
