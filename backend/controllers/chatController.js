@@ -87,6 +87,9 @@ const sendMessage = async (req, res) => {
       receiverId
     );
 
+    // Check if this is the first message in conversation
+    const existingMessages = await Message.countDocuments({ conversationId });
+
     const newMessage = await Message.create({
       conversationId,
       sender: req.user._id,
@@ -100,6 +103,18 @@ const sendMessage = async (req, res) => {
       { path: 'receiver', select: 'name role' },
       { path: 'productId', select: 'name images' },
     ]);
+
+    // Notify receiver if first message
+    if (existingMessages === 0) {
+      const createNotification = require('../utils/createNotification');
+      await createNotification({
+        userId: receiverId,
+        title: '💬 New Message!',
+        message: `${req.user.name} started a conversation with you.`,
+        type: 'system',
+        link: `/chat/${req.user._id}`,
+      });
+    }
 
     res.status(201).json(populated);
   } catch (error) {

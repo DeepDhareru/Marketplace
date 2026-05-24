@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { FiShoppingCart, FiUser, FiLogOut, FiSun, FiMoon, FiMenu, FiX } from 'react-icons/fi';
 import NotificationBell from './NotificationBell';
 import { FiMessageCircle } from 'react-icons/fi';
+import API from '../api/axios';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -13,9 +14,25 @@ const Navbar = () => {
   const { darkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [unreadChats, setUnreadChats] = useState(0);
 
   useEffect(() => {
     if (user) fetchCartCount();
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchUnread = async () => {
+      try {
+        const { data } = await API.get('/chat/unread');
+        setUnreadChats(data.count);
+      } catch {
+        setUnreadChats(0);
+      }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 15000);
+    return () => clearInterval(interval);
   }, [user]);
 
   const handleLogout = () => {
@@ -89,6 +106,11 @@ const Navbar = () => {
                   </Link>
                   <Link to="/chat" className="relative">
                     <FiMessageCircle size={22} className="text-gray-700 dark:text-gray-300" />
+                    {unreadChats > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                        {unreadChats > 9 ? '9+' : unreadChats}
+                      </span>
+                    )}
                   </Link>
                 </>
               )}

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import API from '../../api/axios';
 import Loader from '../../components/Loader';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { FiMessageCircle } from 'react-icons/fi';
 
 const STATUSES = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
 
@@ -17,6 +19,7 @@ const SellerOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetch = async () => {
@@ -90,7 +93,7 @@ const SellerOrders = () => {
 
       {/* Summary Cards */}
       {orders.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mb-6">
           {['all', ...STATUSES].map((s) => (
             <button
               key={s}
@@ -114,7 +117,7 @@ const SellerOrders = () => {
 
       {/* Orders List */}
       {filteredOrders.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
+        <div className="text-center py-20 text-gray-500 dark:text-gray-400">
           <p className="text-5xl mb-4">📋</p>
           <p>No orders found</p>
         </div>
@@ -127,17 +130,24 @@ const SellerOrders = () => {
               <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Order ID: <span className="font-mono text-gray-700 dark:text-gray-300">{order._id.slice(-8)}</span>
+                    Order ID:{' '}
+                    <span className="font-mono text-gray-700 dark:text-gray-300">
+                      {order._id.slice(-8)}
+                    </span>
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Buyer: <span className="font-medium text-gray-700 dark:text-gray-300">{order.buyer?.name}</span>
+                    Buyer:{' '}
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                      {order.buyer?.name}
+                    </span>
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     Address: {order.shippingAddress}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Date: {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                      day: 'numeric', month: 'short', year: 'numeric'
+                    Date:{' '}
+                    {new Date(order.createdAt).toLocaleDateString('en-IN', {
+                      day: 'numeric', month: 'short', year: 'numeric',
                     })}
                   </p>
                 </div>
@@ -156,7 +166,9 @@ const SellerOrders = () => {
                       alt={item.product?.name}
                     />
                     <div className="flex-1">
-                      <p className="font-medium text-gray-800 dark:text-white">{item.product?.name}</p>
+                      <p className="font-medium text-gray-800 dark:text-white">
+                        {item.product?.name}
+                      </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         Qty: {item.quantity} × ₹{item.price}
                       </p>
@@ -169,12 +181,16 @@ const SellerOrders = () => {
               </div>
 
               {/* Order Footer */}
-              <div className="flex justify-between items-center flex-wrap gap-3 border-t dark:border-gray-700 pt-3">
+              <div className="flex justify-between items-center flex-wrap gap-3 border-t dark:border-gray-700 pt-3 mb-3">
                 <div>
                   <p className="font-bold text-blue-600 text-lg">₹{order.totalAmount}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Payment:{' '}
-                    <span className={order.paymentStatus === 'paid' ? 'text-green-600 font-medium' : 'text-red-500 font-medium'}>
+                    <span className={
+                      order.paymentStatus === 'paid'
+                        ? 'text-green-600 font-medium'
+                        : 'text-red-500 font-medium'
+                    }>
                       {order.paymentStatus}
                     </span>
                   </p>
@@ -184,8 +200,31 @@ const SellerOrders = () => {
                   onChange={(e) => updateStatus(order._id, e.target.value)}
                   className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  {STATUSES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
                 </select>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 flex-wrap border-t dark:border-gray-700 pt-3">
+                {/* Message Buyer */}
+                {order.buyer?._id && (
+                  <button
+                    onClick={() => navigate(`/chat/${order.buyer._id}`)}
+                    className="flex items-center gap-1.5 border border-blue-400 dark:border-blue-600 text-blue-600 dark:text-blue-400 px-4 py-2 rounded-lg text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 transition font-medium"
+                  >
+                    <FiMessageCircle size={15} />
+                    Message Buyer
+                  </button>
+                )}
+
+                {/* View buyer email */}
+                {order.buyer?.email && (
+                  <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 px-2 py-2">
+                    📧 {order.buyer.email}
+                  </div>
+                )}
               </div>
 
             </div>

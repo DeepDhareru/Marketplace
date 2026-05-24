@@ -6,6 +6,7 @@ import OrderTimeline from '../../components/OrderTimeline';
 import { useCart } from '../../context/CartContext';
 import generateInvoice from '../../utils/generateInvoice';
 import toast from 'react-hot-toast';
+import { FiMessageCircle } from 'react-icons/fi';
 
 const STATUS_COLORS = {
   pending: 'bg-yellow-100 text-yellow-700',
@@ -66,6 +67,20 @@ const MyOrders = () => {
     }
   };
 
+  // Get unique sellers from order items
+  const getOrderSellers = (order) => {
+    const sellers = [];
+    const seenIds = new Set();
+    for (const item of order.items) {
+      const sellerId = item.product?.seller;
+      if (sellerId && !seenIds.has(sellerId)) {
+        seenIds.add(sellerId);
+        sellers.push(sellerId);
+      }
+    }
+    return sellers;
+  };
+
   if (loading) return <Loader />;
 
   return (
@@ -73,7 +88,7 @@ const MyOrders = () => {
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">My Orders</h1>
 
       {orders.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
+        <div className="text-center py-20 text-gray-500 dark:text-gray-400">
           <p className="text-5xl mb-4">📦</p>
           <p className="text-lg mb-4">No orders yet</p>
           <button
@@ -163,7 +178,8 @@ const MyOrders = () => {
 
               {/* Action Buttons */}
               <div className="flex gap-3 flex-wrap">
-                {/* Download Invoice - only for paid orders */}
+
+                {/* Download Invoice */}
                 {order.paymentStatus === 'paid' && (
                   <button
                     onClick={() => handleDownloadInvoice(order)}
@@ -173,16 +189,28 @@ const MyOrders = () => {
                   </button>
                 )}
 
-                {/* Reorder - only for delivered orders */}
+                {/* Reorder */}
                 {order.status === 'delivered' && (
                   <button
                     onClick={() => handleReorder(order)}
                     disabled={reordering === order._id}
-                    className="flex-1 border border-blue-500 text-blue-600 py-2 rounded-xl text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="flex-1 border border-blue-500 text-blue-600 py-2 rounded-xl text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     {reordering === order._id ? 'Adding...' : '🔄 Reorder'}
                   </button>
                 )}
+
+                {/* Message Seller */}
+                {getOrderSellers(order).length > 0 && (
+                  <button
+                    onClick={() => navigate(`/chat/${getOrderSellers(order)[0]}`)}
+                    className="flex-1 border border-blue-400 dark:border-blue-600 text-blue-600 dark:text-blue-400 py-2 rounded-xl text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition flex items-center justify-center gap-2"
+                  >
+                    <FiMessageCircle size={15} />
+                    Message Seller
+                  </button>
+                )}
+
               </div>
 
             </div>
