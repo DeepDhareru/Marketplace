@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import API from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -8,7 +8,8 @@ import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiArrowLeft } fr
 const Register = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'buyer' });
+  const [searchParams] = useSearchParams();
+  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'buyer', referralCode: searchParams.get('ref') || '' });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [step, setStep] = useState(1);
@@ -174,6 +175,37 @@ const Register = () => {
                     </div>
                     <p className={`text-xs mt-1 ${strength.text}`}>{strength.label}</p>
                   </div>
+                )}
+              </div>
+
+              {/* Referral Code */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Referral Code
+                  <span className="text-gray-400 dark:text-gray-500 font-normal ml-1">(optional)</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🎁</span>
+                  <input
+                    type="text"
+                    name="referralCode"
+                    value={form.referralCode}
+                    onChange={handleChange}
+                    placeholder="Enter referral code"
+                    className={`w-full border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition placeholder-gray-400 dark:bg-gray-700 dark:text-white ${
+                      form.referralCode
+                        ? 'border-green-400 bg-green-50 dark:bg-green-900/20 dark:border-green-700'
+                        : 'border-gray-200 dark:border-gray-600'
+                    }`}
+                  />
+                  {form.referralCode && (
+                    <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-green-500 text-sm">✓</span>
+                  )}
+                </div>
+                {form.referralCode && (
+                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                    🎉 You'll get ₹30 credits on signup!
+                  </p>
                 )}
               </div>
 

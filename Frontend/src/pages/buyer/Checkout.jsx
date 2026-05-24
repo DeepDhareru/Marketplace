@@ -17,6 +17,9 @@ const Checkout = () => {
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponLoading, setCouponLoading] = useState(false);
+  const [creditsToUse, setCreditsToUse] = useState(0);
+  const [availableCredits, setAvailableCredits] = useState(0);
+  const [creditsApplied, setCreditsApplied] = useState(false);
 
   const items = state?.items || [];
   const flashPrices = state?.flashPrices || {};
@@ -33,7 +36,7 @@ const Checkout = () => {
   );
 
   const flashSavings = originalSubtotal - subtotal;
-  const finalTotal = subtotal - discount;
+  const finalTotal = subtotal - discount - creditsToUse;
 
   // Fetch saved addresses
   useEffect(() => {
@@ -51,6 +54,19 @@ const Checkout = () => {
       }
     };
     fetchAddresses();
+  }, []);
+
+  // Fetch referral credits
+  useEffect(() => {
+    const fetchCredits = async () => {
+      try {
+        const { data } = await API.get('/auth/referral/stats');
+        setAvailableCredits(data.referralCredits || 0);
+      } catch {
+        setAvailableCredits(0);
+      }
+    };
+    fetchCredits();
   }, []);
 
   const applyCoupon = async () => {
@@ -112,6 +128,10 @@ const Checkout = () => {
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
             });
+
+            if (creditsToUse > 0) {
+              await API.post('/auth/referral/apply-credits', { amount: creditsToUse });
+          }
             toast.success('Payment successful! 🎉');
             fetchCartCount();
             navigate('/my-orders');
@@ -255,6 +275,59 @@ const Checkout = () => {
         )}
       </div>
 
+      {/* Referral Credits */}
+      {availableCredits > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 mb-4">
+          <h2 className="font-semibold text-gray-800 dark:text-white mb-3">
+            🎁 Referral Credits
+          </h2>
+          {!creditsApplied ? (
+            <div className="flex justify-between items-center bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+              <div>
+                <p className="font-medium text-blue-700 dark:text-blue-300 text-sm">
+                  You have ₹{availableCredits} credits available
+                </p>
+                <p className="text-xs text-blue-500 dark:text-blue-400 mt-0.5">
+                  Apply to get instant discount
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  const use = Math.min(availableCredits, subtotal - discount);
+                  setCreditsToUse(use);
+                  setCreditsApplied(true);
+                  toast.success(`₹${use} credits applied!`);
+                }}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition font-medium"
+              >
+                Apply
+              </button>
+            </div>
+          ) : (
+            <div className="flex justify-between items-center bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+              <div>
+                <p className="font-medium text-green-700 dark:text-green-300 text-sm">
+                  ✓ ₹{creditsToUse} credits applied!
+                </p>
+                <p className="text-xs text-green-500 dark:text-green-400 mt-0.5">
+                  ₹{availableCredits - creditsToUse} remaining after this order
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setCreditsToUse(0);
+                  setCreditsApplied(false);
+                  toast.success('Credits removed');
+                }}
+                className="text-red-500 hover:text-red-700 text-sm font-medium"
+              >
+                Remove
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Shipping Address */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
         <h2 className="font-semibold text-gray-800 dark:text-white mb-4">Shipping Address</h2>
@@ -326,6 +399,12 @@ const Checkout = () => {
             <div className="flex justify-between text-sm text-green-600">
               <span>Coupon ({couponCode})</span>
               <span>- ₹{discount}</span>
+            </div>
+          )}
+          {creditsToUse > 0 && (
+            <div className="flex justify-between text-sm text-blue-600">
+              <span>🎁 Referral Credits</span>
+              <span>- ₹{creditsToUse}</span>
             </div>
           )}
           <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">

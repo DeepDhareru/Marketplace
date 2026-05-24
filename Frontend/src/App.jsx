@@ -34,6 +34,8 @@ import ManageFlashSales from './pages/seller/ManageFlashSales';
 
 import ComparePage from './pages/ComparePage';
 
+import ReferralPage from './pages/ReferralPage';
+
 function App() {
   return (
     <BrowserRouter>
@@ -78,6 +80,9 @@ function App() {
 
           {/* Compare */}
           <Route path="/compare" element={<ComparePage />} />
+
+          {/* Referral */}
+          <Route path="/referral" element={<ProtectedRoute><ReferralPage /></ProtectedRoute>} />
 
           
           <Route path="*" element={<NotFound />} />

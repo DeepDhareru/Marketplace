@@ -12,6 +12,16 @@ const ProductQnA = ({ productId, sellerId }) => {
   const [answeringId, setAnsweringId] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  console.log('ProductQnA Props:', {
+    productId,
+    sellerId,
+    sellerIdType: typeof sellerId,
+    userId: user?._id,
+    userIdType: typeof user?._id,
+    userRole: user?.role,
+    isMatch: user?._id?.toString() === sellerId?.toString(),
+  });
+
   useEffect(() => {
     API.get(`/qna/${productId}`)
       .then(({ data }) => setQnas(data))

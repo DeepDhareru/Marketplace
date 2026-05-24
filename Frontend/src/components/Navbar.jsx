@@ -83,6 +83,9 @@ const Navbar = () => {
                   <Link to="/compare" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
                     ⚖️ Compare
                   </Link>
+                  <Link to="/referral" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
+                    🎁 Referral
+                  </Link>
                 </>
               )}
 
