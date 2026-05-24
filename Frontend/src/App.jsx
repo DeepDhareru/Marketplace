@@ -36,6 +36,8 @@ import ComparePage from './pages/ComparePage';
 
 import ReferralPage from './pages/ReferralPage';
 
+import ChatPage from './pages/ChatPage';
+
 function App() {
   return (
     <BrowserRouter>
@@ -83,6 +85,10 @@ function App() {
 
           {/* Referral */}
           <Route path="/referral" element={<ProtectedRoute><ReferralPage /></ProtectedRoute>} />
+
+          {/* Chat */}
+          <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+          <Route path="/chat/:userId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
 
           
           <Route path="*" element={<NotFound />} />

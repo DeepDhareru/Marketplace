@@ -10,6 +10,7 @@ import ProductRecommendations from '../components/ProductRecommendations';
 import RecentlyViewed from '../components/RecentlyViewed';
 import useRecentlyViewed from '../hooks/useRecentlyViewed';
 import ProductQnA from '../components/ProductQnA';
+import ChatButton from '../components/ChatButton';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -209,6 +210,11 @@ const ProductDetail = () => {
             >
               🔗 Share Product
             </button>
+
+            <ChatButton
+              sellerId={product.seller?._id}
+              sellerName={product.seller?.name}
+            />
           </div>
         </div>
       </div>

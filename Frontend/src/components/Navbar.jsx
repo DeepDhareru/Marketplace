@@ -5,6 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useEffect, useState } from 'react';
 import { FiShoppingCart, FiUser, FiLogOut, FiSun, FiMoon, FiMenu, FiX } from 'react-icons/fi';
 import NotificationBell from './NotificationBell';
+import { FiMessageCircle } from 'react-icons/fi';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -85,6 +86,9 @@ const Navbar = () => {
                   </Link>
                   <Link to="/referral" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm">
                     🎁 Referral
+                  </Link>
+                  <Link to="/chat" className="relative">
+                    <FiMessageCircle size={22} className="text-gray-700 dark:text-gray-300" />
                   </Link>
                 </>
               )}
