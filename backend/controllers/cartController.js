@@ -1,4 +1,5 @@
 const Cart = require('../models/Cart');
+const FlashSale = require('../models/FlashSale');
 
 const getCart = async (req, res) => {
   try {

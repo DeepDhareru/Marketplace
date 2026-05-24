@@ -7,22 +7,36 @@ const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 const { orderConfirmationEmail, newOrderSellerEmail, orderStatusEmail } = require('../utils/emailTemplates');
 const createNotification = require('../utils/createNotification');
+const getFlashPrice = require('../utils/getFlashPrice');
 
 const createOrder = async (req, res) => {
   try {
-    const { items, totalAmount, shippingAddress } = req.body;
+    const { items, shippingAddress } = req.body;
+
+    // Recalculate prices server-side with flash sale check
+    let totalAmount = 0;
+    const verifiedItems = await Promise.all(
+      items.map(async (item) => {
+        const { price } = await getFlashPrice(item.product, item.price);
+        totalAmount += price * item.quantity;
+        return { ...item, price };
+      })
+    );
+
     const razorpayOrder = await razorpay.orders.create({
       amount: totalAmount * 100,
       currency: 'INR',
       receipt: `receipt_${Date.now()}`,
     });
+
     const order = await Order.create({
       buyer: req.user._id,
-      items,
+      items: verifiedItems,
       totalAmount,
       shippingAddress,
       razorpayOrderId: razorpayOrder.id,
     });
+
     res.status(201).json({ order, razorpayOrderId: razorpayOrder.id });
   } catch (error) {
     res.status(500).json({ message: error.message });
