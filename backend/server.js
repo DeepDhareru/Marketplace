@@ -19,7 +19,7 @@ app.use(helmet());
 // Rate limiting - 100 requests per 15 minutes per IP
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10000,
+  max: 100000,
   message: { message: 'Too many requests, please try again after 15 minutes' },
 });
 app.use('/api', limiter);
@@ -27,7 +27,7 @@ app.use('/api', limiter);
 // Stricter limit for auth routes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 1000,
   message: { message: 'Too many login attempts, please try again after 15 minutes' },
 });
 app.use('/api/auth', authLimiter);
