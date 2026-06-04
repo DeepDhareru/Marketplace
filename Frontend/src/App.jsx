@@ -14,6 +14,7 @@ import Register from './pages/auth/Register';
 import Checkout from './pages/buyer/Checkout';
 import MyOrders from './pages/buyer/MyOrders';
 import Profile from './pages/buyer/Profile';
+import ManageAddresses from './pages/buyer/ManageAddresses';
 
 import SellerDashboard from './pages/seller/SellerDashboard';
 import MyProducts from './pages/seller/MyProducts';
@@ -56,6 +57,7 @@ function App() {
           <Route path="/my-orders" element={<ProtectedRoute role="buyer"><MyOrders /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/wishlist" element={<ProtectedRoute role="buyer"><Wishlist /></ProtectedRoute>} />
+          <Route path="/addresses" element={<ProtectedRoute role="buyer"><ManageAddresses /></ProtectedRoute>} />
 
           {/* Seller */}
           <Route path="/seller/dashboard" element={<ProtectedRoute role="seller"><SellerDashboard /></ProtectedRoute>} />
