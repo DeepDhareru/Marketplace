@@ -147,34 +147,57 @@ const MyCoupons = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {coupons.map((coupon) => (
-            <div key={coupon._id} className="bg-white dark:bg-gray-800 rounded-2xl shadow p-5 border-l-4 border-blue-500">
-              <div className="flex justify-between items-start mb-3">
-                <span className="font-mono font-bold text-lg text-blue-600">{coupon.code}</span>
-                <button
-                  onClick={() => handleDelete(coupon._id)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Delete
-                </button>
+          {coupons.map((coupon) => {
+            const now = new Date();
+            const isExpired = new Date(coupon.expiresAt) < now;
+
+            return (
+              <div key={coupon._id} className="bg-white dark:bg-gray-800 rounded-2xl shadow p-5 border-l-4 border-blue-500">
+                <div className="flex justify-between items-start mb-3">
+                  <span className="font-mono font-bold text-lg text-blue-600">{coupon.code}</span>
+                  <button
+                    onClick={() => handleDelete(coupon._id)}
+                    className="text-red-500 hover:text-red-700 text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
+                <p className={`text-sm font-medium ${
+                  new Date(coupon.expiresAt) < new Date()
+                    ? 'text-red-500 dark:text-red-400'
+                    : 'text-gray-700 dark:text-gray-300'
+                }`}>
+                  {coupon.discountType === 'percent'
+                    ? `${coupon.discountValue}% off`
+                    : `₹${coupon.discountValue} off`}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Min order: ₹{coupon.minOrderAmount}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Used: {coupon.usedCount}/{coupon.maxUses}
+                </p>
+                <p className={`text-sm font-medium ${
+                  new Date(coupon.expiresAt) < new Date()
+                    ? 'text-red-500 dark:text-red-400'
+                    : 'text-gray-500 dark:text-gray-400'
+                }`}>
+                  Expires: {new Date(coupon.expiresAt).toLocaleDateString('en-IN', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                  })}
+                </p>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium mt-2 inline-block ${
+                  isExpired
+                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                    : coupon.isActive
+                    ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
+                    : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
+                }`}>
+                  {isExpired ? '⏰ Expired' : coupon.isActive ? '✓ Active' : 'Inactive'}
+                </span>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 font-medium">
-                {coupon.discountType === 'percent'
-                  ? `${coupon.discountValue}% off`
-                  : `₹${coupon.discountValue} off`}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Min order: ₹{coupon.minOrderAmount}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Used: {coupon.usedCount}/{coupon.maxUses}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Expires: {new Date(coupon.expiresAt).toLocaleDateString()}
-              </p>
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium mt-2 inline-block ${
-                coupon.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-              }`}>
-                {coupon.isActive ? 'Active' : 'Inactive'}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

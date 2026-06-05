@@ -11,7 +11,7 @@ const getFlashPrice = require('../utils/getFlashPrice');
 
 const createOrder = async (req, res) => {
   try {
-    const { items, shippingAddress } = req.body;
+    const { items, shippingAddress, couponCode } = req.body;
 
     // Recalculate prices server-side with flash sale check
     let totalAmount = 0;
@@ -22,6 +22,24 @@ const createOrder = async (req, res) => {
         return { ...item, price };
       })
     );
+
+    // Apply coupon discount server-side
+    if (couponCode) {
+      const Coupon = require('../models/Coupon');
+      const coupon = await Coupon.findOne({
+        code: couponCode.toUpperCase(),
+        isActive: true,
+      });
+      if (coupon && new Date() < new Date(coupon.expiresAt)) {
+        let discount = 0;
+        if (coupon.discountType === 'percent') {
+          discount = Math.round((totalAmount * coupon.discountValue) / 100);
+        } else {
+          discount = coupon.discountValue;
+        }
+        totalAmount = Math.max(0, totalAmount - discount);
+      }
+    }
 
     const razorpayOrder = await razorpay.orders.create({
       amount: totalAmount * 100,
@@ -34,6 +52,7 @@ const createOrder = async (req, res) => {
       items: verifiedItems,
       totalAmount,
       shippingAddress,
+      couponCode: couponCode || null,
       razorpayOrderId: razorpayOrder.id,
     });
 
@@ -64,6 +83,15 @@ const verifyPayment = async (req, res) => {
 
     await Cart.findOneAndDelete({ buyer: req.user._id });
 
+    // Increment coupon usage count
+    if (order.couponCode) {
+      const Coupon = require('../models/Coupon');
+      await Coupon.findOneAndUpdate(
+        { code: order.couponCode },
+        { $inc: { usedCount: 1 } }
+      );
+    }
+
     // Send confirmation email to buyer
     const buyer = await User.findById(req.user._id);
     await sendEmail({
@@ -83,7 +111,8 @@ const verifyPayment = async (req, res) => {
 
     // Send notification to sellers
     const productIds = order.items.map(i => i.product);
-    const products = await Product.find({ _id: { $in: productIds } }).populate('seller', 'name email _id');
+    const products = await Product.find({ _id: { $in: productIds } })
+      .populate('seller', 'name email _id');
     const uniqueSellers = [];
     const seenIds = new Set();
     for (const p of products) {
@@ -94,18 +123,15 @@ const verifyPayment = async (req, res) => {
     }
 
     for (const seller of uniqueSellers) {
-      // Email to seller
       await sendEmail({
         to: seller.email,
         subject: 'New Order Received - Marketplace',
         html: newOrderSellerEmail(order, seller.name),
       });
-
-      // In-app notification to seller
       await createNotification({
         userId: seller._id,
         title: 'New Order Received! 📦',
-        message: `You have a new order worth ₹${order.totalAmount}. Process it now.`,
+        message: `You have a new order worth ₹${order.totalAmount}.`,
         type: 'order',
         link: '/seller/orders',
       });

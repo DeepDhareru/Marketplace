@@ -102,6 +102,7 @@ app.use('/api/flash-sales', require('./routes/flashSaleRoutes'));
 app.use('/api/qna', require('./routes/qnaRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
+app.use('/api/returns', require('./routes/returnRoutes'));
 
 app.get('/', (req, res) => res.json({ message: 'Marketplace API running' }));
 

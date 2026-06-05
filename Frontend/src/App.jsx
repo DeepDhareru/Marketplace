@@ -39,6 +39,10 @@ import ReferralPage from './pages/ReferralPage';
 
 import ChatPage from './pages/ChatPage';
 
+import MyReturns from './pages/buyer/MyReturns';
+import RequestReturn from './pages/buyer/RequestReturn';
+import SellerReturns from './pages/seller/SellerReturns';
+
 function App() {
   return (
     <BrowserRouter>
@@ -92,6 +96,10 @@ function App() {
           <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
           <Route path="/chat/:userId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
 
+          {/* Returns */}
+          <Route path="/my-returns" element={<ProtectedRoute role="buyer"><MyReturns /></ProtectedRoute>} />
+          <Route path="/return/:orderId" element={<ProtectedRoute role="buyer"><RequestReturn /></ProtectedRoute>} />
+          <Route path="/seller/returns" element={<ProtectedRoute role="seller"><SellerReturns /></ProtectedRoute>} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>

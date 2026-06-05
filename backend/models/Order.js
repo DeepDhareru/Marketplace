@@ -10,6 +10,7 @@ const orderSchema = new mongoose.Schema(
         price: Number,
       },
     ],
+    couponCode: { type: String, default: null },
     totalAmount: { type: Number, required: true },
     shippingAddress: { type: String, required: true },
     status: {

@@ -6,7 +6,7 @@ import OrderTimeline from '../../components/OrderTimeline';
 import { useCart } from '../../context/CartContext';
 import generateInvoice from '../../utils/generateInvoice';
 import toast from 'react-hot-toast';
-import { FiMessageCircle } from 'react-icons/fi';
+import { FiMessageCircle, FiCornerUpLeft } from 'react-icons/fi';
 
 const STATUS_COLORS = {
   pending: 'bg-yellow-100 text-yellow-700',
@@ -208,6 +208,20 @@ const MyOrders = () => {
                   >
                     <FiMessageCircle size={15} />
                     Message Seller
+                  </button>
+                )}
+
+                {/* Return Request - only for delivered orders within 7 days */}
+                {order.status === 'delivered' && (() => {
+                  const daysSince = (new Date() - new Date(order.updatedAt)) / (1000 * 60 * 60 * 24);
+                  return daysSince <= 7;
+                })() && (
+                  <button
+                    onClick={() => navigate(`/return/${order._id}`)}
+                    className="flex-1 border border-orange-400 dark:border-orange-600 text-orange-600 dark:text-orange-400 py-2 rounded-xl text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/20 transition flex items-center justify-center gap-2"
+                  >
+                    <FiCornerUpLeft size={15} />
+                    Return
                   </button>
                 )}
 

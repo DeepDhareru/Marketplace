@@ -73,9 +73,17 @@ const Checkout = () => {
     if (!couponCode.trim()) return toast.error('Enter a coupon code');
     setCouponLoading(true);
     try {
+      // Pass cart items so backend can validate seller-specific coupon
+      const cartItems = items.map((item) => ({
+        product: item.product._id,
+        quantity: item.quantity,
+        price: item.product.price,
+      }));
+
       const { data } = await API.post('/coupons/validate', {
         code: couponCode,
         orderAmount: subtotal,
+        cartItems,
       });
       setDiscount(data.discount);
       setCouponApplied(true);
@@ -112,6 +120,7 @@ const Checkout = () => {
       const { data } = await API.post('/orders', {
         items: orderItems,
         shippingAddress: address,
+        couponCode: couponApplied ? couponCode : null,
       });
 
       const options = {

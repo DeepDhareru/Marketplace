@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from 'react';
 import {
   FiShoppingCart, FiUser, FiLogOut, FiSun, FiMoon,
   FiMenu, FiX, FiMessageCircle, FiChevronDown,
-  FiHeart, FiMapPin, FiRefreshCw, FiZap, FiGitMerge, FiGift
+  FiHeart, FiMapPin, FiRefreshCw, FiCornerUpLeft, FiZap, FiGitMerge, FiGift
 } from 'react-icons/fi';
 import NotificationBell from './NotificationBell';
 import API from '../api/axios';
@@ -68,6 +68,7 @@ const Navbar = () => {
     { icon: FiZap, label: 'Flash Deals', path: '/flash-sales' },
     { icon: FiGitMerge, label: 'Compare', path: '/compare' },
     { icon: FiGift, label: 'Referral', path: '/referral' },
+    { icon: FiCornerUpLeft, label: 'My Returns', path: '/my-returns' },
   ];
 
   return (
@@ -191,6 +192,9 @@ const Navbar = () => {
                   </Link>
                   <Link to="/seller/flash-sales" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     Flash Sales
+                  </Link>
+                  <Link to="/seller/returns" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Returns
                   </Link>
 
                   {/* Chat for seller */}
