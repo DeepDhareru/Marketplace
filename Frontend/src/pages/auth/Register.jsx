@@ -29,7 +29,8 @@ const Register = () => {
     setLoading(true);
     try {
       const { data } = await API.post('/auth/register', form);
-      toast.success('Account created! Check your email for OTP.');
+      login(data);
+      toast.success('Account Create Successfully!');
       // Redirect to verify page instead of logging in
       // navigate('/verify-email', {
       //   state: { userId: data.userId, email: data.email }
