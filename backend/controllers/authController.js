@@ -34,8 +34,8 @@ const register = async (req, res) => {
     }
 
     // Generate OTP
-    const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    // const otp = generateOTP();
+    // const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     const user = await User.create({
       name,
@@ -46,8 +46,8 @@ const register = async (req, res) => {
       referredBy: referrer?._id || null,
       referralCredits: referrer ? REFEREE_BONUS : 0,
       isEmailVerified: false,
-      emailOTP: otp,
-      emailOTPExpiry: otpExpiry,
+      // emailOTP: otp,
+      // emailOTPExpiry: otpExpiry,
     });
 
     // Give referrer bonus
@@ -65,17 +65,17 @@ const register = async (req, res) => {
     }
 
     // Send OTP email
-    await sendEmail({
-      to: email,
-      subject: 'Verify Your Email - Marketplace',
-      html: otpEmail(name, otp),
-    });
+    // await sendEmail({
+    //   to: email,
+    //   subject: 'Verify Your Email - Marketplace',
+    //   html: otpEmail(name, otp),
+    // });
 
     res.status(201).json({
       message: 'Account created! Please verify your email.',
       userId: user._id,
       email: user.email,
-      requiresVerification: true,
+      requiresVerification: false,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -93,25 +93,25 @@ const login = async (req, res) => {
     if (!user.isActive) return res.status(403).json({ message: 'Account banned' });
 
     // Check email verification
-    if (!user.isEmailVerified) {
+    if (user) {
       // Resend OTP
-      const otp = generateOTP();
-      user.emailOTP = otp;
-      user.emailOTPExpiry = new Date(Date.now() + 10 * 60 * 1000);
+      // const otp = generateOTP();
+      // user.emailOTP = otp;
+      // user.emailOTPExpiry = new Date(Date.now() + 10 * 60 * 1000);
       await user.save();
 
-      await sendEmail({
-        to: user.email,
-        subject: 'Verify Your Email - Marketplace',
-        html: otpEmail(user.name, otp),
-      });
+      // await sendEmail({
+      //   to: user.email,
+      //   subject: 'Verify Your Email - Marketplace',
+      //   html: otpEmail(user.name, otp),
+      // });
 
-      return res.status(403).json({
-        message: 'Please verify your email first. A new OTP has been sent.',
-        requiresVerification: true,
-        userId: user._id,
-        email: user.email,
-      });
+      // return res.status(403).json({
+      //   message: 'Please verify your email first. A new OTP has been sent.',
+      //   requiresVerification: true,
+      //   userId: user._id,
+      //   email: user.email,
+      // });
     }
 
     res.json({
