@@ -31,9 +31,9 @@ const Register = () => {
       const { data } = await API.post('/auth/register', form);
       toast.success('Account created! Check your email for OTP.');
       // Redirect to verify page instead of logging in
-      navigate('/verify-email', {
-        state: { userId: data.userId, email: data.email }
-      });
+      // navigate('/verify-email', {
+      //   state: { userId: data.userId, email: data.email }
+      // });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed');
       setStep(1);
