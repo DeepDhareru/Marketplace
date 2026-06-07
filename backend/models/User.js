@@ -21,6 +21,9 @@ const userSchema = new mongoose.Schema(
     referralCode: { type: String, unique: true, sparse: true },
     referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     referralCredits: { type: Number, default: 0 },
+    isEmailVerified: { type: Boolean, default: false },
+    emailOTP: { type: String, default: null },
+    emailOTPExpiry: { type: Date, default: null },
   },
   { timestamps: true }
 );

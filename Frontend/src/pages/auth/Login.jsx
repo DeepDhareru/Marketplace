@@ -25,6 +25,17 @@ const Login = () => {
       else if (data.role === 'admin') navigate('/admin/dashboard');
       else navigate('/');
     } catch (err) {
+      // Handle unverified email
+      if (err.response?.data?.requiresVerification) {
+        toast.error('Please verify your email first. OTP sent!');
+        navigate('/verify-email', {
+          state: {
+            userId: err.response.data.userId,
+            email: err.response.data.email,
+          },
+        });
+        return;
+      }
       toast.error(err.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);

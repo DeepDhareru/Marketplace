@@ -67,4 +67,28 @@ const orderStatusEmail = (order, user, status) => `
 </div>
 `;
 
-module.exports = { orderConfirmationEmail, newOrderSellerEmail, orderStatusEmail };
+const otpEmail = (name, otp) => `
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+  <div style="background: #2563eb; padding: 20px; text-align: center;">
+    <h1 style="color: white; margin: 0;">🛒 Marketplace</h1>
+  </div>
+  <div style="padding: 30px; background: #f9fafb;">
+    <h2 style="color: #1f2937;">Verify Your Email</h2>
+    <p style="color: #6b7280;">Hi ${name}, use the OTP below to verify your email address.</p>
+    <div style="background: white; border-radius: 12px; padding: 30px; text-align: center; margin: 20px 0;">
+      <p style="color: #6b7280; margin: 0 0 10px; font-size: 14px;">Your OTP</p>
+      <p style="font-size: 48px; font-weight: bold; color: #2563eb; letter-spacing: 12px; margin: 0;">
+        ${otp}
+      </p>
+      <p style="color: #9ca3af; font-size: 12px; margin: 15px 0 0;">
+        Valid for 10 minutes only
+      </p>
+    </div>
+    <p style="color: #6b7280; font-size: 13px;">
+      If you didn't create an account, please ignore this email.
+    </p>
+  </div>
+</div>
+`;
+
+module.exports = { orderConfirmationEmail, newOrderSellerEmail, orderStatusEmail, otpEmail };

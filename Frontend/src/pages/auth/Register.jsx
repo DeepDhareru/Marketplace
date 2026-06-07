@@ -29,10 +29,11 @@ const Register = () => {
     setLoading(true);
     try {
       const { data } = await API.post('/auth/register', form);
-      login(data);
-      toast.success('Account created successfully! 🎉');
-      if (data.role === 'seller') navigate('/seller/dashboard');
-      else navigate('/');
+      toast.success('Account created! Check your email for OTP.');
+      // Redirect to verify page instead of logging in
+      navigate('/verify-email', {
+        state: { userId: data.userId, email: data.email }
+      });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed');
       setStep(1);

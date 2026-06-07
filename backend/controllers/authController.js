@@ -1,8 +1,12 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
+const generateOTP = require('../utils/generateOTP');
 const generateReferralCode = require('../utils/generateReferralCode');
 const createNotification = require('../utils/createNotification');
+const sendEmail = require('../utils/sendEmail');
+const { otpEmail } = require('../utils/emailTemplates');
+
 
 const REFERRAL_BONUS = 50; // ₹50 credit for referrer
 const REFEREE_BONUS = 30;  // ₹30 credit for new user
@@ -17,17 +21,21 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Generate unique referral code for new user
+    // Generate unique referral code
     let newReferralCode = generateReferralCode(name);
     while (await User.findOne({ referralCode: newReferralCode })) {
       newReferralCode = generateReferralCode(name);
     }
 
-    // Find referrer if code provided
+    // Find referrer
     let referrer = null;
     if (referralCode) {
       referrer = await User.findOne({ referralCode: referralCode.toUpperCase() });
     }
+
+    // Generate OTP
+    const otp = generateOTP();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     const user = await User.create({
       name,
@@ -37,15 +45,16 @@ const register = async (req, res) => {
       referralCode: newReferralCode,
       referredBy: referrer?._id || null,
       referralCredits: referrer ? REFEREE_BONUS : 0,
+      isEmailVerified: false,
+      emailOTP: otp,
+      emailOTPExpiry: otpExpiry,
     });
 
-    // Give referrer their bonus
+    // Give referrer bonus
     if (referrer) {
       await User.findByIdAndUpdate(referrer._id, {
         $inc: { referralCredits: REFERRAL_BONUS },
       });
-
-      // Notify referrer
       await createNotification({
         userId: referrer._id,
         title: '🎉 Referral Bonus!',
@@ -55,14 +64,18 @@ const register = async (req, res) => {
       });
     }
 
+    // Send OTP email
+    await sendEmail({
+      to: email,
+      subject: 'Verify Your Email - Marketplace',
+      html: otpEmail(name, otp),
+    });
+
     res.status(201).json({
-      _id: user._id,
-      name: user.name,
+      message: 'Account created! Please verify your email.',
+      userId: user._id,
       email: user.email,
-      role: user.role,
-      referralCode: user.referralCode,
-      referralCredits: user.referralCredits,
-      token: generateToken(user._id, user.role),
+      requiresVerification: true,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -73,10 +86,33 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
     if (!user.isActive) return res.status(403).json({ message: 'Account banned' });
+
+    // Check email verification
+    if (!user.isEmailVerified) {
+      // Resend OTP
+      const otp = generateOTP();
+      user.emailOTP = otp;
+      user.emailOTPExpiry = new Date(Date.now() + 10 * 60 * 1000);
+      await user.save();
+
+      await sendEmail({
+        to: user.email,
+        subject: 'Verify Your Email - Marketplace',
+        html: otpEmail(user.name, otp),
+      });
+
+      return res.status(403).json({
+        message: 'Please verify your email first. A new OTP has been sent.',
+        requiresVerification: true,
+        userId: user._id,
+        email: user.email,
+      });
+    }
 
     res.json({
       _id: user._id,
@@ -186,8 +222,76 @@ const applyReferralCredits = async (req, res) => {
   }
 };
 
+const verifyOTP = async (req, res) => {
+  try {
+    const { userId, otp } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (user.isEmailVerified) {
+      return res.status(400).json({ message: 'Email already verified' });
+    }
+
+    if (!user.emailOTP || user.emailOTP !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    if (new Date() > new Date(user.emailOTPExpiry)) {
+      return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
+    }
+
+    user.isEmailVerified = true;
+    user.emailOTP = null;
+    user.emailOTPExpiry = null;
+    await user.save();
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      referralCode: user.referralCode,
+      referralCredits: user.referralCredits,
+      token: generateToken(user._id, user.role),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const resendOTP = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (user.isEmailVerified) {
+      return res.status(400).json({ message: 'Email already verified' });
+    }
+
+    const otp = generateOTP();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+    user.emailOTP = otp;
+    user.emailOTPExpiry = otpExpiry;
+    await user.save();
+
+    await sendEmail({
+      to: user.email,
+      subject: 'New OTP - Marketplace',
+      html: otpEmail(user.name, otp),
+    });
+
+    res.json({ message: 'New OTP sent to your email' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   register, login, getProfile, updateProfile,
   addAddress, deleteAddress, getAddresses,
   getReferralStats, applyReferralCredits,
+  verifyOTP, resendOTP,
 };

@@ -229,7 +229,7 @@ const Navbar = () => {
 
               {/* ── Common icons ──────────────────────── */}
               <NotificationBell />
-
+              
               {/* Profile dropdown */}
               <Link
                 to="/profile"

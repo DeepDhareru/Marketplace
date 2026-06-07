@@ -43,6 +43,10 @@ import MyReturns from './pages/buyer/MyReturns';
 import RequestReturn from './pages/buyer/RequestReturn';
 import SellerReturns from './pages/seller/SellerReturns';
 
+import VerifyEmail from './pages/auth/VerifyEmail';
+
+import BulkUpload from './pages/seller/BulkUpload';
+
 function App() {
   return (
     <BrowserRouter>
@@ -100,6 +104,12 @@ function App() {
           <Route path="/my-returns" element={<ProtectedRoute role="buyer"><MyReturns /></ProtectedRoute>} />
           <Route path="/return/:orderId" element={<ProtectedRoute role="buyer"><RequestReturn /></ProtectedRoute>} />
           <Route path="/seller/returns" element={<ProtectedRoute role="seller"><SellerReturns /></ProtectedRoute>} />
+
+          {/* Email Verification */}
+          <Route path="/verify-email" element={<VerifyEmail />} />
+
+          {/* Bulk Upload */}
+          <Route path="/seller/bulk-upload" element={<ProtectedRoute role="seller"><BulkUpload /></ProtectedRoute>} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
