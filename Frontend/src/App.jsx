@@ -107,7 +107,7 @@ function App() {
           <Route path="/seller/returns" element={<ProtectedRoute role="seller"><SellerReturns /></ProtectedRoute>} />
 
           {/* Email Verification */}
-          <Route path="/verify-email" element={<VerifyEmail />} />
+          {/* <Route path="/verify-email" element={<VerifyEmail />} /> */}
 
           {/* Bulk Upload */}
           <Route path="/seller/bulk-upload" element={<ProtectedRoute role="seller"><BulkUpload /></ProtectedRoute>} />
