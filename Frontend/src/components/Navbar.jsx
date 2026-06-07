@@ -196,7 +196,16 @@ const Navbar = () => {
                   <Link to="/seller/returns" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     Returns
                   </Link>
+                  <Link
+                    to="/seller/bulk-upload"
+                    className="flex items-center gap-2 border border-blue-500 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition text-sm font-medium"
+                  >
+                    📊 Bulk Upload
+                  </Link>
 
+                  <Link to="/seller/earnings" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Earnings
+                  </Link>
                   {/* Chat for seller */}
                   <Link to="/chat" className="relative p-2">
                     <FiMessageCircle size={20} className="text-gray-600 dark:text-gray-300" />

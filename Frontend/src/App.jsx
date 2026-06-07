@@ -46,6 +46,7 @@ import SellerReturns from './pages/seller/SellerReturns';
 import VerifyEmail from './pages/auth/VerifyEmail';
 
 import BulkUpload from './pages/seller/BulkUpload';
+import EarningsPage from './pages/seller/EarningsPage';
 
 function App() {
   return (
@@ -110,6 +111,9 @@ function App() {
 
           {/* Bulk Upload */}
           <Route path="/seller/bulk-upload" element={<ProtectedRoute role="seller"><BulkUpload /></ProtectedRoute>} />
+
+          {/* Earnings */}
+          <Route path="/seller/earnings" element={<ProtectedRoute role="seller"><EarningsPage /></ProtectedRoute>} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
