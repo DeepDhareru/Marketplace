@@ -43,7 +43,7 @@ import MyReturns from './pages/buyer/MyReturns';
 import RequestReturn from './pages/buyer/RequestReturn';
 import SellerReturns from './pages/seller/SellerReturns';
 
-import VerifyEmail from './pages/auth/VerifyEmail';
+// import VerifyEmail from './pages/auth/VerifyEmail';
 
 import BulkUpload from './pages/seller/BulkUpload';
 import EarningsPage from './pages/seller/EarningsPage';

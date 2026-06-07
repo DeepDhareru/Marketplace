@@ -37,7 +37,7 @@ const Register = () => {
       // });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed');
-      setStep(1);
+      // setStep(1);
     } finally {
       setLoading(false);
     }
