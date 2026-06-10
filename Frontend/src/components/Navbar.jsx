@@ -233,6 +233,9 @@ const Navbar = () => {
                   <Link to="/admin/orders" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     Orders
                   </Link>
+                  <Link to="/admin/analytics" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    Analytics
+                  </Link>
                 </>
               )}
 

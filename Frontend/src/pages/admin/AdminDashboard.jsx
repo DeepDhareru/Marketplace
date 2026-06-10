@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import API from '../../api/axios';
 import Loader from '../../components/Loader';
 
@@ -49,7 +50,16 @@ const AdminDashboard = () => {
           </div>
         ))}
       </div>
+      <div className="mt-6 text-center">
+        <Link
+          to="/admin/analytics"
+          className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
+        >
+          📊 View Full Analytics
+        </Link>
+      </div>
     </div>
+    
   );
 };
 

@@ -105,6 +105,7 @@ app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/returns', require('./routes/returnRoutes'));
 app.use('/api/bulk', require('./routes/bulkUploadRoutes'));
 app.use('/api/payouts', require('./routes/payoutRoutes'));
+app.use('/api/analytics', require('./routes/analyticsRoutes'));
 
 app.get('/', (req, res) => res.json({ message: 'Marketplace API running' }));
 

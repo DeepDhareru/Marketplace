@@ -48,6 +48,8 @@ import SellerReturns from './pages/seller/SellerReturns';
 import BulkUpload from './pages/seller/BulkUpload';
 import EarningsPage from './pages/seller/EarningsPage';
 
+import AdminAnalytics from './pages/admin/AdminAnalytics';
+
 function App() {
   return (
     <BrowserRouter>
@@ -114,6 +116,9 @@ function App() {
 
           {/* Earnings */}
           <Route path="/seller/earnings" element={<ProtectedRoute role="seller"><EarningsPage /></ProtectedRoute>} />
+
+          {/* Admin Analytics */}
+          <Route path="/admin/analytics" element={<ProtectedRoute role="admin"><AdminAnalytics /></ProtectedRoute>} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
