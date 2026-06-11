@@ -1,12 +1,14 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import { useEffect, useState, useRef } from 'react';
 import {
-  FiShoppingCart, FiUser, FiLogOut, FiSun, FiMoon,
+  FiShoppingCart, FiLogOut, FiSun, FiMoon,
   FiMenu, FiX, FiMessageCircle, FiChevronDown,
-  FiHeart, FiMapPin, FiRefreshCw, FiCornerUpLeft, FiZap, FiGitMerge, FiGift
+  FiHeart, FiMapPin, FiCornerUpLeft, FiZap, FiGitMerge, FiGift,
+  FiGrid, FiPackage, FiTag, FiDollarSign, FiUpload,
+  FiBarChart2, FiUsers, FiShield,
 } from 'react-icons/fi';
 import NotificationBell from './NotificationBell';
 import API from '../api/axios';
@@ -16,6 +18,7 @@ const Navbar = () => {
   const { cartCount, fetchCartCount } = useCart();
   const { darkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [unreadChats, setUnreadChats] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -40,7 +43,6 @@ const Navbar = () => {
     return () => clearInterval(interval);
   }, [user]);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -51,25 +53,76 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+    setDropdownOpen(false);
+  }, [location.pathname]);
+
   const handleLogout = () => {
     logout();
     navigate('/');
-    setMobileOpen(false);
-    setDropdownOpen(false);
   };
 
-  const closeMenu = () => setMobileOpen(false);
-
-  // Buyer dropdown menu items
+  // ── Menu definitions ─────────────────────────────────────
   const buyerMenuItems = [
-    { icon: FiShoppingCart, label: 'My Orders', path: '/my-orders' },
-    { icon: FiHeart, label: 'Wishlist', path: '/wishlist' },
-    { icon: FiMapPin, label: 'Addresses', path: '/addresses' },
-    { icon: FiZap, label: 'Flash Deals', path: '/flash-sales' },
-    { icon: FiGitMerge, label: 'Compare', path: '/compare' },
-    { icon: FiGift, label: 'Referral', path: '/referral' },
-    { icon: FiCornerUpLeft, label: 'My Returns', path: '/my-returns' },
+    { icon: FiShoppingCart, label: 'My Orders', path: '/my-orders', emoji: '📦' },
+    { icon: FiHeart, label: 'Wishlist', path: '/wishlist', emoji: '❤️' },
+    { icon: FiMapPin, label: 'Addresses', path: '/addresses', emoji: '📍' },
+    { icon: FiZap, label: 'Flash Deals', path: '/flash-sales', emoji: '⚡' },
+    { icon: FiGitMerge, label: 'Compare', path: '/compare', emoji: '⚖️' },
+    { icon: FiGift, label: 'Referral', path: '/referral', emoji: '🎁' },
+    { icon: FiCornerUpLeft, label: 'My Returns', path: '/my-returns', emoji: '↩️' },
   ];
+
+  const sellerMenuItems = [
+    { icon: FiGrid, label: 'Dashboard', path: '/seller/dashboard', emoji: '📊' },
+    { icon: FiPackage, label: 'My Products', path: '/seller/products', emoji: '📦' },
+    { icon: FiShoppingCart, label: 'Orders', path: '/seller/orders', emoji: '🛒' },
+    { icon: FiTag, label: 'Coupons', path: '/seller/coupons', emoji: '🎟️' },
+    { icon: FiZap, label: 'Flash Sales', path: '/seller/flash-sales', emoji: '⚡' },
+    { icon: FiCornerUpLeft, label: 'Returns', path: '/seller/returns', emoji: '↩️' },
+    { icon: FiUpload, label: 'Bulk Upload', path: '/seller/bulk-upload', emoji: '📤' },
+    { icon: FiDollarSign, label: 'Earnings', path: '/seller/earnings', emoji: '💰' },
+  ];
+
+  const adminMenuItems = [
+    { icon: FiGrid, label: 'Dashboard', path: '/admin/dashboard', emoji: '📊' },
+    { icon: FiUsers, label: 'Users', path: '/admin/users', emoji: '👥' },
+    { icon: FiPackage, label: 'Products', path: '/admin/products', emoji: '📦' },
+    { icon: FiShoppingCart, label: 'Orders', path: '/admin/orders', emoji: '🛒' },
+    { icon: FiBarChart2, label: 'Analytics', path: '/admin/analytics', emoji: '📈' },
+  ];
+
+  const menuItems =
+    user?.role === 'buyer' ? buyerMenuItems :
+    user?.role === 'seller' ? sellerMenuItems :
+    user?.role === 'admin' ? adminMenuItems : [];
+
+  const menuLabel =
+    user?.role === 'buyer' ? 'Menu' :
+    user?.role === 'seller' ? 'Seller Panel' :
+    user?.role === 'admin' ? 'Admin Panel' : '';
+
+  const menuColor =
+    user?.role === 'seller' ? {
+      active: 'bg-purple-50 dark:bg-purple-900/30 text-purple-600',
+      hover: 'hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600',
+      dot: 'bg-purple-500',
+    } :
+    user?.role === 'admin' ? {
+      active: 'bg-red-50 dark:bg-red-900/30 text-red-600',
+      hover: 'hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600',
+      dot: 'bg-red-500',
+    } : {
+      active: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600',
+      hover: 'hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600',
+      dot: 'bg-blue-500',
+    };
+
+  const isActiveMenu = menuItems.some((item) =>
+    location.pathname.startsWith(item.path)
+  );
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50 transition-colors duration-200">
@@ -79,13 +132,12 @@ const Navbar = () => {
         <Link
           to="/"
           className="text-xl font-bold text-blue-600 flex items-center gap-2 flex-shrink-0"
-          onClick={closeMenu}
         >
-          🛒 <span>Marketplace</span>
+          🛒 <span className="hidden sm:inline">Marketplace</span>
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2">
 
           {/* Dark mode toggle */}
           <button
@@ -101,151 +153,105 @@ const Navbar = () => {
           {/* Guest */}
           {!user ? (
             <>
-              <Link
-                to="/login"
-                className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium transition"
-              >
+              <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-3 py-2 rounded-xl transition">
                 Login
               </Link>
-              <Link
-                to="/register"
-                className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition"
-              >
+              <Link to="/register" className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition">
                 Get Started
               </Link>
             </>
           ) : (
             <>
-              {/* ── BUYER ─────────────────────────────── */}
-              {user.role === 'buyer' && (
-                <>
-                  {/* More dropdown */}
-                  <div className="relative" ref={dropdownRef}>
-                    <button
-                      onClick={() => setDropdownOpen(!dropdownOpen)}
-                      className={`flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition ${
-                        dropdownOpen
-                          ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600'
-                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                      }`}
-                    >
-                      Menu
-                      <FiChevronDown
-                        size={14}
-                        className={`transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
-                      />
-                    </button>
+              {/* ── Unified Dropdown ──────────────────── */}
+              {menuItems.length > 0 && (
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className={`flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-xl transition ${
+                      dropdownOpen || isActiveMenu
+                        ? menuColor.active
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    {/* Role indicator dot */}
+                    <span className={`w-1.5 h-1.5 rounded-full ${menuColor.dot}`} />
+                    {menuLabel}
+                    <FiChevronDown
+                      size={14}
+                      className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
+                    />
+                  </button>
 
-                    {dropdownOpen && (
-                      <div className="absolute right-0 top-11 w-52 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50">
-                        {buyerMenuItems.map((item) => (
+                  {/* Dropdown Panel */}
+                  {dropdownOpen && (
+                    <div className="absolute right-0 top-12 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50 overflow-hidden">
+
+                      {/* Role header */}
+                      <div className="px-4 py-2 border-b dark:border-gray-700 mb-1">
+                        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                          {user.role === 'seller' ? '🏪 Seller Panel' :
+                           user.role === 'admin' ? '🛡️ Admin Panel' :
+                           '👤 My Account'}
+                        </p>
+                      </div>
+
+                      {menuItems.map((item) => {
+                        const isActive = location.pathname === item.path ||
+                          location.pathname.startsWith(item.path + '/');
+                        return (
                           <Link
                             key={item.path}
                             to={item.path}
                             onClick={() => setDropdownOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition"
+                            className={`flex items-center gap-3 px-4 py-2.5 text-sm transition ${
+                              isActive
+                                ? `${menuColor.active} font-medium`
+                                : `text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600`
+                            }`}
                           >
-                            <item.icon size={15} className="flex-shrink-0" />
+                            <span className="text-base">{item.emoji}</span>
                             {item.label}
+                            {isActive && (
+                              <span className={`ml-auto w-1.5 h-1.5 rounded-full ${menuColor.dot}`} />
+                            )}
                           </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Cart */}
-                  <Link to="/cart" className="relative p-2">
-                    <FiShoppingCart size={20} className="text-gray-600 dark:text-gray-300" />
-                    {cartCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 bg-blue-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold leading-none">
-                        {cartCount > 9 ? '9+' : cartCount}
-                      </span>
-                    )}
-                  </Link>
-
-                  {/* Chat */}
-                  <Link to="/chat" className="relative p-2">
-                    <FiMessageCircle size={20} className="text-gray-600 dark:text-gray-300" />
-                    {unreadChats > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold leading-none">
-                        {unreadChats > 9 ? '9+' : unreadChats}
-                      </span>
-                    )}
-                  </Link>
-                </>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               )}
 
-              {/* ── SELLER ────────────────────────────── */}
-              {user.role === 'seller' && (
-                <>
-                  <Link to="/seller/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Dashboard
-                  </Link>
-                  <Link to="/seller/products" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Products
-                  </Link>
-                  <Link to="/seller/orders" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Orders
-                  </Link>
-                  <Link to="/seller/coupons" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Coupons
-                  </Link>
-                  <Link to="/seller/flash-sales" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Flash Sales
-                  </Link>
-                  <Link to="/seller/returns" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Returns
-                  </Link>
-                  <Link
-                    to="/seller/bulk-upload"
-                    className="flex items-center gap-2 border border-blue-500 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition text-sm font-medium"
-                  >
-                    📊 Bulk Upload
-                  </Link>
-
-                  <Link to="/seller/earnings" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Earnings
-                  </Link>
-                  {/* Chat for seller */}
-                  <Link to="/chat" className="relative p-2">
-                    <FiMessageCircle size={20} className="text-gray-600 dark:text-gray-300" />
-                    {unreadChats > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold leading-none">
-                        {unreadChats > 9 ? '9+' : unreadChats}
-                      </span>
-                    )}
-                  </Link>
-                </>
+              {/* Cart — buyer only */}
+              {user.role === 'buyer' && (
+                <Link to="/cart" className="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                  <FiShoppingCart size={20} className="text-gray-600 dark:text-gray-300" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 bg-blue-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold leading-none">
+                      {cartCount > 9 ? '9+' : cartCount}
+                    </span>
+                  )}
+                </Link>
               )}
 
-              {/* ── ADMIN ─────────────────────────────── */}
-              {user.role === 'admin' && (
-                <>
-                  <Link to="/admin/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Dashboard
-                  </Link>
-                  <Link to="/admin/users" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Users
-                  </Link>
-                  <Link to="/admin/products" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Products
-                  </Link>
-                  <Link to="/admin/orders" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Orders
-                  </Link>
-                  <Link to="/admin/analytics" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 text-sm font-medium px-2 py-1 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    Analytics
-                  </Link>
-                </>
-              )}
+              {/* Chat */}
+              <Link to="/chat" className="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                <FiMessageCircle size={20} className="text-gray-600 dark:text-gray-300" />
+                {unreadChats > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold leading-none">
+                    {unreadChats > 9 ? '9+' : unreadChats}
+                  </span>
+                )}
+              </Link>
 
-              {/* ── Common icons ──────────────────────── */}
+              {/* Notifications */}
               <NotificationBell />
-              
-              {/* Profile dropdown */}
+
+              {/* Avatar */}
               <Link
                 to="/profile"
                 className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-sm hover:bg-blue-200 dark:hover:bg-blue-800 transition flex-shrink-0"
+                title="Profile"
               >
                 {user.name?.charAt(0).toUpperCase()}
               </Link>
@@ -253,7 +259,7 @@ const Navbar = () => {
               {/* Logout */}
               <button
                 onClick={handleLogout}
-                className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition"
                 title="Logout"
               >
                 <FiLogOut size={18} className="text-red-500" />
@@ -263,15 +269,9 @@ const Navbar = () => {
         </div>
 
         {/* Mobile right side */}
-        <div className="flex md:hidden items-center gap-2">
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-          >
-            {darkMode
-              ? <FiSun size={17} className="text-yellow-400" />
-              : <FiMoon size={17} className="text-gray-500" />
-            }
+        <div className="flex md:hidden items-center gap-1.5">
+          <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+            {darkMode ? <FiSun size={17} className="text-yellow-400" /> : <FiMoon size={17} className="text-gray-500" />}
           </button>
           {user && (
             <>
@@ -285,6 +285,14 @@ const Navbar = () => {
                   )}
                 </Link>
               )}
+              <Link to="/chat" className="relative p-1.5">
+                <FiMessageCircle size={20} className="text-gray-600 dark:text-gray-300" />
+                {unreadChats > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                    {unreadChats > 9 ? '9+' : unreadChats}
+                  </span>
+                )}
+              </Link>
               <NotificationBell />
             </>
           )}
@@ -305,11 +313,11 @@ const Navbar = () => {
         <div className="md:hidden bg-white dark:bg-gray-800 border-t dark:border-gray-700 px-4 py-4">
           {!user ? (
             <div className="space-y-2">
-              <Link to="/login" onClick={closeMenu}
+              <Link to="/login" onClick={() => setMobileOpen(false)}
                 className="block text-center border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                 Login
               </Link>
-              <Link to="/register" onClick={closeMenu}
+              <Link to="/register" onClick={() => setMobileOpen(false)}
                 className="block text-center bg-blue-600 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition">
                 Get Started Free
               </Link>
@@ -317,112 +325,54 @@ const Navbar = () => {
           ) : (
             <div className="space-y-1">
 
-              {/* Buyer mobile links */}
-              {user.role === 'buyer' && (
-                <>
-                  <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2 pt-2 pb-1">
-                    My Account
-                  </p>
-                  {[
-                    { icon: '📦', label: 'My Orders', path: '/my-orders' },
-                    { icon: '❤️', label: 'Wishlist', path: '/wishlist' },
-                    { icon: '📍', label: 'Addresses', path: '/addresses' },
-                    { icon: '🛒', label: 'Cart', path: '/cart', badge: cartCount },
-                    { icon: '⚡', label: 'Flash Deals', path: '/flash-sales' },
-                    { icon: '⚖️', label: 'Compare', path: '/compare' },
-                    { icon: '🎁', label: 'Referral', path: '/referral' },
-                    { icon: '💬', label: 'Messages', path: '/chat', badge: unreadChats },
-                  ].map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={closeMenu}
-                      className="flex items-center justify-between px-3 py-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 transition text-sm"
-                    >
-                      <span className="flex items-center gap-2.5">
-                        <span>{item.icon}</span>
-                        {item.label}
-                      </span>
-                      {item.badge > 0 && (
-                        <span className="bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
-                  ))}
-                </>
-              )}
+              {/* Role label */}
+              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2 pt-1 pb-2">
+                {user.role === 'seller' ? '🏪 Seller Panel' :
+                 user.role === 'admin' ? '🛡️ Admin Panel' :
+                 '👤 My Account'}
+              </p>
 
-              {/* Seller mobile links */}
-              {user.role === 'seller' && (
-                <>
-                  <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2 pt-2 pb-1">
-                    Seller Panel
-                  </p>
-                  {[
-                    { icon: '📊', label: 'Dashboard', path: '/seller/dashboard' },
-                    { icon: '📦', label: 'Products', path: '/seller/products' },
-                    { icon: '🛒', label: 'Orders', path: '/seller/orders' },
-                    { icon: '🎟️', label: 'Coupons', path: '/seller/coupons' },
-                    { icon: '⚡', label: 'Flash Sales', path: '/seller/flash-sales' },
-                    { icon: '💬', label: 'Messages', path: '/chat', badge: unreadChats },
-                  ].map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={closeMenu}
-                      className="flex items-center justify-between px-3 py-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 transition text-sm"
-                    >
-                      <span className="flex items-center gap-2.5">
-                        <span>{item.icon}</span>
-                        {item.label}
-                      </span>
-                      {item.badge > 0 && (
-                        <span className="bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
-                  ))}
-                </>
-              )}
-
-              {/* Admin mobile links */}
-              {user.role === 'admin' && (
-                <>
-                  <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2 pt-2 pb-1">
-                    Admin Panel
-                  </p>
-                  {[
-                    { icon: '📊', label: 'Dashboard', path: '/admin/dashboard' },
-                    { icon: '👥', label: 'Users', path: '/admin/users' },
-                    { icon: '📦', label: 'Products', path: '/admin/products' },
-                    { icon: '🛒', label: 'Orders', path: '/admin/orders' },
-                  ].map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={closeMenu}
-                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600 transition text-sm"
-                    >
-                      <span>{item.icon}</span>
+              {/* Menu items */}
+              {menuItems.map((item) => {
+                const isActive = location.pathname === item.path ||
+                  location.pathname.startsWith(item.path + '/');
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition text-sm ${
+                      isActive
+                        ? `${menuColor.active} font-medium`
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-blue-600'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <span>{item.emoji}</span>
                       {item.label}
-                    </Link>
-                  ))}
-                </>
-              )}
+                    </span>
+                    {isActive && <span className={`w-1.5 h-1.5 rounded-full ${menuColor.dot}`} />}
+                  </Link>
+                );
+              })}
+
+              {/* Divider */}
+              <div className="border-t dark:border-gray-700 my-2" />
 
               {/* Profile & Logout */}
-              <div className="border-t dark:border-gray-700 mt-3 pt-3 flex items-center justify-between px-1">
+              <div className="flex items-center justify-between px-1 pt-1">
                 <Link
                   to="/profile"
-                  onClick={closeMenu}
+                  onClick={() => setMobileOpen(false)}
                   className="flex items-center gap-2.5 text-gray-600 dark:text-gray-300 hover:text-blue-600 transition"
                 >
                   <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-sm">
                     {user.name?.charAt(0).toUpperCase()}
                   </div>
-                  <span className="text-sm font-medium">{user.name}</span>
+                  <div>
+                    <p className="text-sm font-medium">{user.name}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 capitalize">{user.role}</p>
+                  </div>
                 </Link>
                 <button
                   onClick={handleLogout}

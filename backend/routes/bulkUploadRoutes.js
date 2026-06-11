@@ -8,18 +8,19 @@ const { authorizeRoles } = require('../middleware/roleMiddleware');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename: (req, file, cb) => cb(null, `bulk_${Date.now()}${path.extname(file.originalname)}`),
+  filename: (req, file, cb) =>
+    cb(null, `bulk_${Date.now()}${path.extname(file.originalname)}`),
 });
 
 const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    const allowed = ['.xlsx', '.xls', '.csv'];
+    const allowed = ['.xlsx', '.xls', '.csv', '.zip'];
     const ext = path.extname(file.originalname).toLowerCase();
     if (allowed.includes(ext)) cb(null, true);
-    else cb(new Error('Only Excel and CSV files are allowed'));
+    else cb(new Error('Only Excel, CSV or ZIP files allowed'));
   },
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB for ZIP with images
 });
 
 router.post('/upload', protect, authorizeRoles('seller'), upload.single('file'), bulkUploadProducts);
