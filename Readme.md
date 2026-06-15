@@ -312,30 +312,6 @@ OTP    : 1234
 
 ---
 
-## 🚢 Deployment
-
-### Backend — Render
-
-1. Push code to GitHub
-2. Create new Web Service on [render.com](https://render.com)
-3. Connect your GitHub repo
-4. Set root directory to `backend`
-5. Build command: `npm install`
-6. Start command: `node server.js`
-7. Add all environment variables from `.env`
-
-### Frontend — Vercel
-
-1. Go to [vercel.com](https://vercel.com)
-2. Import your GitHub repo
-3. Set root directory to `frontend`
-4. Add environment variables:
-   - `VITE_API_URL` = your Render backend URL
-   - `VITE_RAZORPAY_KEY_ID` = your Razorpay key
-5. Deploy!
-
----
-
 ## ✅ Features Checklist
 
 | Feature | Status |
@@ -361,29 +337,6 @@ OTP    : 1234
 | CI/CD GitHub Actions | ✅ Done |
 | Full Production Deployment | ✅ Done |
 
----
-
-## 📝 Resume Bullet Points
-
-```
-• Built a full-stack multi-vendor marketplace with React, Node.js,
-  Express and MongoDB with JWT role-based authentication (Buyer/Seller/Admin)
-
-• Integrated Razorpay payment gateway with HMAC signature verification,
-  webhook handling and automated PDF invoice generation using jsPDF
-
-• Implemented AI-powered product description generator, sales analytics
-  dashboard with Recharts and CSV export for seller order management
-
-• Added Nodemailer email notifications, Cloudinary image CDN, coupon
-  discount system and real-time order status tracking with timeline UI
-
-• Deployed on Vercel + Render with CI/CD pipeline using GitHub Actions
-  for automated build verification on every push to main branch
-```
-
----
-
 ## 👨‍💻 Author
 
 **Your Name**
@@ -400,4 +353,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-> Built with ❤️ as a portfolio project to demonstrate full-stack development skills.
+> Built with portfolio project to demonstrate full-stack development skills.
