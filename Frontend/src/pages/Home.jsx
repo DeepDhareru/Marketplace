@@ -51,36 +51,37 @@ const LandingPage = () => {
           <div className="absolute top-1/2 left-1/2 w-40 h-40 bg-white opacity-5 rounded-full" />
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 py-20 relative z-10">
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm px-4 py-2 rounded-full text-sm text-black font-medium mb-6">
-              <span>⚡</span>
-              <span>India's fastest growing marketplace</span>
+        {/* Hero Section - fix mobile padding */}
+        <div className="max-w-6xl mx-auto px-4 py-12 sm:py-20 relative z-10">
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="inline-flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
+                <span>⚡</span>
+                <span>India's fastest growing marketplace</span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
+                Buy & Sell
+                <span className="text-blue-200"> Anything</span>
+                <br />Online with Ease
+              </h1>
+              <p className="text-blue-100 text-base sm:text-lg md:text-xl mb-6 sm:mb-10 max-w-2xl mx-auto leading-relaxed px-2">
+                Join thousands of buyers and sellers on Marketplace.
+                Secure payments, real-time tracking and amazing deals.
+              </p>
+              <div className="flex gap-3 justify-center flex-wrap px-4">
+                <button
+                  onClick={() => navigate('/register')}
+                  className="bg-white text-blue-600 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold text-sm sm:text-lg hover:bg-blue-50 transition shadow-lg"
+                >
+                  Get Started Free
+                </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold text-sm sm:text-lg hover:bg-white hover:text-blue-600 transition"
+                >
+                  Sign In
+                </button>
+              </div>
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Buy & Sell
-              <span className="text-blue-200"> Anything</span>
-              <br />Online with Ease
-            </h1>
-            <p className="text-blue-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
-              Join thousands of buyers and sellers on Marketplace.
-              Secure payments, real-time tracking and amazing deals — all in one place.
-            </p>
-            <div className="flex gap-4 justify-center flex-wrap">
-              <button
-                onClick={() => navigate('/register')}
-                className="bg-white text-blue-600 px-8 py-4 rounded-2xl font-bold text-lg hover:bg-blue-50 transition shadow-lg"
-              >
-                Get Started Free
-              </button>
-              <button
-                onClick={() => navigate('/login')}
-                className="border-2 border-white text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-white hover:text-blue-600 transition"
-              >
-                Sign In
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Wave bottom */}
@@ -93,12 +94,12 @@ const LandingPage = () => {
       </div>
 
       {/* Stats Bar */}
-      <div className="max-w-5xl mx-auto px-4 -mt-2 mb-16">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="max-w-5xl mx-auto px-4 mb-12 sm:mb-16">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <p className="text-3xl font-bold text-blue-600 mb-1">{stat.value}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-blue-600 mb-1">{stat.value}</p>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -114,7 +115,7 @@ const LandingPage = () => {
             From browsing to buying, we've got every step covered with powerful features.
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {features.map((f) => (
             <div
               key={f.title}
@@ -137,7 +138,7 @@ const LandingPage = () => {
             <h2 className="text-3xl font-bold text-white mb-3">How it Works</h2>
             <p className="text-blue-200">Get started in just 3 simple steps</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {steps.map((s, i) => (
               <div key={s.step} className="text-center relative">
                 {i < steps.length - 1 && (
@@ -164,7 +165,7 @@ const LandingPage = () => {
             Choose your role and get started today
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-6 gap-4">
 
           {/* Buyer Card */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition">

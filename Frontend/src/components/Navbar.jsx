@@ -133,7 +133,7 @@ const Navbar = () => {
           to="/"
           className="text-xl font-bold text-blue-600 flex items-center gap-2 flex-shrink-0"
         >
-          🛒 <span className="hidden sm:inline">Marketplace</span>
+          🛒 <span>Marketplace</span>
         </Link>
 
         {/* Desktop Nav */}
