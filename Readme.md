@@ -340,17 +340,10 @@ OTP    : 1234
 ## 👨‍💻 Author
 
 **Your Name**
-- 🌐 Portfolio: [yourportfolio.com](https://yourportfolio.com)
-- 💼 LinkedIn: [linkedin.com/in/yourname](https://linkedin.com/in/yourname)
-- 🐙 GitHub: [github.com/yourusername](https://github.com/yourusername)
-- 📧 Email: youremail@gmail.com
+- 💼 LinkedIn: https://linkedin.com/in/deep-dhareru-562436370
+- 🐙 GitHub: https://github.com/DeepDhareru
+- 📧 Email: Deepakmon268@gmail.com
 
----
 
-## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
-
----
-
-> Built with portfolio project to demonstrate full-stack development skills.
+> Built as a portfolio project to demonstrate full-stack development skills.
