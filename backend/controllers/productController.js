@@ -57,15 +57,52 @@ const updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    // Verify seller owns this product
     if (product.seller.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: 'Not your product' });
+      return res.status(403).json({ message: 'Not authorized' });
     }
-    const { name, description, price, category, stock } = req.body;
-    product.name = name || product.name;
-    product.description = description || product.description;
-    product.price = price || product.price;
-    product.category = category || product.category;
-    product.stock = stock || product.stock;
+
+    // Update text fields
+    product.name = req.body.name || product.name;
+    product.description = req.body.description || product.description;
+    product.price = req.body.price || product.price;
+    product.category = req.body.category || product.category;
+    product.stock = req.body.stock !== undefined ? req.body.stock : product.stock;
+
+    // Handle removed images (sent as JSON string array of public_ids to remove)
+    if (req.body.removedImages) {
+      const removedIds = JSON.parse(req.body.removedImages);
+      for (const publicId of removedIds) {
+        try {
+          await cloudinary.uploader.destroy(publicId);
+        } catch (err) {
+          console.error('Failed to delete image:', publicId, err.message);
+        }
+      }
+      product.images = product.images.filter(
+        (img) => !removedIds.includes(img.public_id)
+      );
+    }
+
+    // Handle new images upload
+    if (req.files && req.files.length > 0) {
+      const uploadedImages = [];
+      for (const file of req.files) {
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: 'marketplace',
+        });
+        uploadedImages.push({ url: result.secure_url, public_id: result.public_id });
+        fs.unlinkSync(file.path);
+      }
+      product.images = [...product.images, ...uploadedImages];
+    }
+
+    // Enforce max 5 images
+    if (product.images.length > 5) {
+      return res.status(400).json({ message: 'Maximum 5 images allowed per product' });
+    }
+
     const updated = await product.save();
     res.json(updated);
   } catch (error) {
