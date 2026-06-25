@@ -11,6 +11,7 @@ import { SocketProvider } from './context/SocketContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
+    {/* ✅ ThemeProvider only here, removed from App.jsx */}
     <ThemeProvider>
       <AuthProvider>
         <SocketProvider>

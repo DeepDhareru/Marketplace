@@ -3,8 +3,6 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 
-import { ThemeProvider } from './context/ThemeContext';
-
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
@@ -36,29 +34,25 @@ import FlashSales from './pages/FlashSales';
 import ManageFlashSales from './pages/seller/ManageFlashSales';
 
 import ComparePage from './pages/ComparePage';
-
 import ReferralPage from './pages/ReferralPage';
-
 import ChatPage from './pages/ChatPage';
 
 import MyReturns from './pages/buyer/MyReturns';
 import RequestReturn from './pages/buyer/RequestReturn';
 import SellerReturns from './pages/seller/SellerReturns';
 
-// import VerifyEmail from './pages/auth/VerifyEmail';
-
 import BulkUpload from './pages/seller/BulkUpload';
 import EarningsPage from './pages/seller/EarningsPage';
-
 import AdminAnalytics from './pages/admin/AdminAnalytics';
 
 function App() {
   return (
-    <ThemeProvider>
-      <div classname="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-        <BrowserRouter>
+    // ✅ Fix 1: className not classname. Fix 2: removed duplicate ThemeProvider
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+      <BrowserRouter>
         <Navbar />
-        <main className="min-h-screen bg-gray-50">
+        {/* ✅ Fix 3: main now has dark:bg-gray-900 instead of hardcoded bg-gray-50 */}
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
           <Routes>
             {/* Public */}
             <Route path="/" element={<Home />} />
@@ -80,22 +74,21 @@ function App() {
             <Route path="/seller/products/add" element={<ProtectedRoute role="seller"><AddProduct /></ProtectedRoute>} />
             <Route path="/seller/products/edit/:id" element={<ProtectedRoute role="seller"><EditProduct /></ProtectedRoute>} />
             <Route path="/seller/orders" element={<ProtectedRoute role="seller"><SellerOrders /></ProtectedRoute>} />
+            <Route path="/seller/coupons" element={<ProtectedRoute role="seller"><MyCoupons /></ProtectedRoute>} />
+            <Route path="/seller/flash-sales" element={<ProtectedRoute role="seller"><ManageFlashSales /></ProtectedRoute>} />
+            <Route path="/seller/returns" element={<ProtectedRoute role="seller"><SellerReturns /></ProtectedRoute>} />
+            <Route path="/seller/bulk-upload" element={<ProtectedRoute role="seller"><BulkUpload /></ProtectedRoute>} />
+            <Route path="/seller/earnings" element={<ProtectedRoute role="seller"><EarningsPage /></ProtectedRoute>} />
 
             {/* Admin */}
             <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
             <Route path="/admin/users" element={<ProtectedRoute role="admin"><AdminUsers /></ProtectedRoute>} />
             <Route path="/admin/products" element={<ProtectedRoute role="admin"><AdminProducts /></ProtectedRoute>} />
             <Route path="/admin/orders" element={<ProtectedRoute role="admin"><AdminOrders /></ProtectedRoute>} />
-
-            {/* Wishlist */}
-            <Route path="/wishlist" element={<ProtectedRoute role="buyer"><Wishlist /></ProtectedRoute>} />
-
-            {/* Coupons */}
-            <Route path="/seller/coupons" element={<ProtectedRoute role="seller"><MyCoupons /></ProtectedRoute>} />
+            <Route path="/admin/analytics" element={<ProtectedRoute role="admin"><AdminAnalytics /></ProtectedRoute>} />
 
             {/* Flash Sales */}
             <Route path="/flash-sales" element={<FlashSales />} />
-            <Route path="/seller/flash-sales" element={<ProtectedRoute role="seller"><ManageFlashSales /></ProtectedRoute>} />
 
             {/* Compare */}
             <Route path="/compare" element={<ComparePage />} />
@@ -110,28 +103,13 @@ function App() {
             {/* Returns */}
             <Route path="/my-returns" element={<ProtectedRoute role="buyer"><MyReturns /></ProtectedRoute>} />
             <Route path="/return/:orderId" element={<ProtectedRoute role="buyer"><RequestReturn /></ProtectedRoute>} />
-            <Route path="/seller/returns" element={<ProtectedRoute role="seller"><SellerReturns /></ProtectedRoute>} />
 
-            {/* Email Verification */}
-            {/* <Route path="/verify-email" element={<VerifyEmail />} /> */}
-
-            {/* Bulk Upload */}
-            <Route path="/seller/bulk-upload" element={<ProtectedRoute role="seller"><BulkUpload /></ProtectedRoute>} />
-
-            {/* Earnings */}
-            <Route path="/seller/earnings" element={<ProtectedRoute role="seller"><EarningsPage /></ProtectedRoute>} />
-
-            {/* Admin Analytics */}
-            <Route path="/admin/analytics" element={<ProtectedRoute role="admin"><AdminAnalytics /></ProtectedRoute>} />
-            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         <Footer />
-        </BrowserRouter>
-      </div>
-    </ThemeProvider>
-
+      </BrowserRouter>
+    </div>
   );
 }
 
