@@ -5,7 +5,7 @@ const { cloudinary } = require('../config/cloudinary');
 const fs = require('fs');
 const path = require('path');
 
-const VALID_CATEGORIES = ['Electronics', 'Clothing', 'Books', 'Home', 'Sports', 'Other'];
+const VALID_CATEGORIES = ['Electronics', 'Clothing', 'Books', 'Home', 'Sports', 'Fitness', 'Fashion', 'Beauty', 'Grocery', 'Other'];
 const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.avif'];
 
 const bulkUploadProducts = async (req, res) => {
