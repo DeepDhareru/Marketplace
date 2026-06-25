@@ -54,7 +54,7 @@ const LandingPage = () => {
         {/* Hero Section - fix mobile padding */}
         <div className="max-w-6xl mx-auto px-4 py-12 sm:py-20 relative z-10">
             <div className="text-center max-w-3xl mx-auto">
-              <div className="inline-flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
+              <div className="inline-flex items-center gap-2 bg-white text-gray-900 bg-opacity-20 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6">
                 <span>⚡</span>
                 <span>India's fastest growing marketplace</span>
               </div>
