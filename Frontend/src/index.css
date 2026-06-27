@@ -4,12 +4,13 @@
 /* Dark mode base styles */
 @layer base {
   html {
-    @apply bg-gray-50;
+   overflow-x: hidden;
   }
-  html.dark {
+  /* html.dark {
     @apply bg-gray-900;
-  }
+  } */
   body {
+    overflow-x: hidden;
     @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200;
   }
 }

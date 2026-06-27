@@ -131,9 +131,10 @@ const Navbar = () => {
         {/* Logo */}
         <Link
           to="/"
-          className="text-xl font-bold text-blue-600 flex items-center gap-2 flex-shrink-0"
+          className="text-base md:text-xl font-bold text-blue-600 flex items-center gap-1 flex-shrink-0 min-w-0"
         >
-          🛒 <span>Marketplace</span>
+          <span className="text-lg">🛒</span>
+          <span className="text-sm md:text-xl font-bold truncate">Marketplace</span>
         </Link>
 
         {/* Desktop Nav */}
@@ -269,26 +270,26 @@ const Navbar = () => {
         </div>
 
         {/* Mobile right side */}
-        <div className="flex md:hidden items-center gap-1.5">
-          <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-            {darkMode ? <FiSun size={17} className="text-yellow-400" /> : <FiMoon size={17} className="text-gray-500" />}
+        <div className="flex md:hidden items-center gap-1">
+          <button onClick={toggleTheme} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+            {darkMode ? <FiSun size={16} className="text-yellow-400" /> : <FiMoon size={16} className="text-gray-500" />}
           </button>
           {user && (
             <>
               {user.role === 'buyer' && (
                 <Link to="/cart" className="relative p-1.5">
-                  <FiShoppingCart size={20} className="text-gray-600 dark:text-gray-300" />
+                  <FiShoppingCart size={18} className="text-gray-600 dark:text-gray-300" />
                   {cartCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 bg-blue-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                    <span className="absolute -top-0.5 -right-0.5 bg-blue-600 text-white text-xs w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold" style={{fontSize:'9px'}}>
                       {cartCount > 9 ? '9+' : cartCount}
                     </span>
                   )}
                 </Link>
               )}
               <Link to="/chat" className="relative p-1.5">
-                <FiMessageCircle size={20} className="text-gray-600 dark:text-gray-300" />
+                <FiMessageCircle size={18} className="text-gray-600 dark:text-gray-300" />
                 {unreadChats > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                  <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold" style={{fontSize:'9px'}}>
                     {unreadChats > 9 ? '9+' : unreadChats}
                   </span>
                 )}
@@ -298,11 +299,11 @@ const Navbar = () => {
           )}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
           >
             {mobileOpen
-              ? <FiX size={20} className="text-gray-700 dark:text-gray-300" />
-              : <FiMenu size={20} className="text-gray-700 dark:text-gray-300" />
+              ? <FiX size={18} className="text-gray-700 dark:text-gray-300" />
+              : <FiMenu size={18} className="text-gray-700 dark:text-gray-300" />
             }
           </button>
         </div>

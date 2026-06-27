@@ -354,26 +354,27 @@ const Home = () => {
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           placeholder="Search products..."
-          className="flex-1 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 min-w-0 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
         />
         <button
           type="submit"
-          className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition"
+          className="bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition text-sm font-medium flex-shrink-0"
         >
           Search
         </button>
         <button
           type="button"
           onClick={() => setShowFilters(!showFilters)}
-          className={`px-4 py-2.5 rounded-lg border transition flex items-center gap-2 ${
+          className={`px-3 py-2.5 rounded-lg border transition flex items-center gap-1.5 flex-shrink-0 text-sm ${
             showFilters || activeFiltersCount > 0
               ? 'bg-blue-600 text-white border-blue-600'
               : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-blue-400'
           }`}
         >
-          🔧 Filters
+          🔧
+          <span className="hidden sm:inline">Filters</span>
           {activeFiltersCount > 0 && (
-            <span className="bg-white text-blue-600 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+            <span className="bg-white text-blue-600 text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
               {activeFiltersCount}
             </span>
           )}
